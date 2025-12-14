@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import { Suspense, lazy } from "react";
 import "./App.css";
 import Header from "./Components/Header";
-import PublicLayout from "./components/layouts/PublicLayout";
+import PublicLayout from "./Components/layouts/PublicLayout";
 import About from "./Components/About";
 import Footer from "./Components/Footer";
 import Feature from "./Components/Feature";
