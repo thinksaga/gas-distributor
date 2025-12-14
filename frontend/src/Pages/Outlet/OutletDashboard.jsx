@@ -91,8 +91,8 @@ const OutletDashboard = () => {
   const salesData = {
     labels: ["Jan", "Feb", "Mar", "Apr", "May"],
     datasets: [
-      { label: "Ordered", data: [3000, 3200, 3100, 2900, 2800], borderColor: "orange", fill: false },
-      { label: "Delivered", data: [2000, 2500, 2400, 2300, 2200], borderColor: "blue", fill: false },
+      { label: "Ordered", data: [3000, 3200, 3100, 2900, 2800], borderColor: "#ff8c00", fill: false },
+      { label: "Delivered", data: [2000, 2500, 2400, 2300, 2200], borderColor: "#0ea5e9", fill: false },
     ],
   };
 

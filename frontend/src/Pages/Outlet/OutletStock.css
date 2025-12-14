@@ -93,13 +93,13 @@
 }
 
 .status-low {
-  background-color: #fee2e2;
-  color: #dc2626;
+  background-color: var(--color-error-50);
+  color: var(--color-error);
 }
 
 .status-instock {
-  background-color: #dcfce7;
-  color: #16a34a;
+  background-color: var(--color-success-50);
+  color: var(--color-success);
 }
 
 .card-actions {

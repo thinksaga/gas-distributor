@@ -13,13 +13,13 @@ const OutletPerformance = () => {
       {
         label: "Revenue",
         data: [20000, 35000, 55000, 70000, 65000, 60000, 75000],
-        borderColor: "blue",
+        borderColor: "#0ea5e9",
         fill: false,
       },
       {
         label: "Profit",
         data: [18000, 30000, 50000, 60000, 55000, 50000, 67000],
-        borderColor: "orange",
+        borderColor: "#ff8c00",
         fill: false,
       },
     ],
