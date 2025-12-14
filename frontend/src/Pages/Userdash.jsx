@@ -8,6 +8,7 @@ import Card from "../Components/Card";
 import StatCard from "../Components/StatCard";
 import Button from "../Components/Button";
 import Badge from "../Components/Badge";
+import NotificationBell from "../Components/NotificationBell";
 import Requeststatus from "./Reqstatus";
 import ProductList from "./ProductList";
 import UserNotify from "./UserNotify";
@@ -220,6 +221,12 @@ const Userdash = () => {
 
       {/* Main Content */}
       <main className="userdash-main">
+        <div className="main-header">
+          <div className="header-spacer"></div>
+          <div className="header-actions">
+            <NotificationBell />
+          </div>
+        </div>
         {loading ? (
           <div className="loading-container">
             <div className="spinner"></div>

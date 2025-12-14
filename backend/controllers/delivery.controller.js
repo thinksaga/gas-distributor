@@ -3,6 +3,7 @@ import Fulfillment from '../models/fullfill.model.js';
 import Request from '../models/request.model.js';
 import Consumer from '../models/consumer.model.js';
 import Outlet from '../models/outlet.model.js';
+import { notifyDeliveryStatusChange } from '../utils/notificationHelper.js';
 
 /**
  * Create a new delivery from an approved request
@@ -209,6 +210,18 @@ export const updateDeliveryStatus = async (req, res) => {
             await Request.findByIdAndUpdate(delivery.requestId._id, { 
                 status: 'cancelled' 
             });
+        }
+
+        // Send notification to consumer
+        try {
+            await notifyDeliveryStatusChange(
+                delivery.requestId.consumerId,
+                delivery.requestId._id,
+                status
+            );
+        } catch (notifError) {
+            console.error("Notification error:", notifError);
+            // Don't fail the request if notification fails
         }
 
         return res.status(200).json({

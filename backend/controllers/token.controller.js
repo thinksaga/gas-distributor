@@ -2,6 +2,7 @@ import RequestModel from "../models/request.model.js";
 import Token from "../models/token.model.js";
 import Outlet from "../models/outlet.model.js";
 import generatePassword from "generate-password";
+import { notifyTokenGenerated } from '../utils/notificationHelper.js';
 
 export const getToken = (req, res) => {
     res.send('Hello from token route');
@@ -79,6 +80,19 @@ export const requestToken = async (req, res) => {
         // Update request with tokenId
         newRequest.tokenId = newToken._id;
         await newRequest.save();
+
+        // Send notification
+        try {
+            await notifyTokenGenerated(
+                consumerId, 
+                newRequest._id, 
+                tokenString, 
+                newToken.expireDate
+            );
+        } catch (notifError) {
+            console.error("Notification error:", notifError);
+            // Don't fail the request if notification fails
+        }
 
         // Populate request details for response
         const populatedRequest = await RequestModel.findById(newRequest._id)
