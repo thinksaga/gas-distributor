@@ -5,8 +5,8 @@ import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
 import { authcontext } from "../../context/authcontext.jsx";
 import API_BASE_URL from "../api.js";
-import Input from "../Components/Input";
-import Button from "../Components/Button";
+import Input from "../Components/atoms/Input";
+import Button from "../Components/atoms/Button";
 import "./LoginPage.css";
 
 const LoginPage = () => {
@@ -96,7 +96,7 @@ const LoginPage = () => {
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
                             error={errors.password}
-                            icon={
+                            rightIcon={
                                 <button
                                     type="button"
                                     onClick={() => setPasswordVisible(!passwordVisible)}
@@ -105,7 +105,6 @@ const LoginPage = () => {
                                     {passwordVisible ? <FaEyeSlash /> : <FaEye />}
                                 </button>
                             }
-                            iconPosition="right"
                             required
                         />
 

@@ -4,8 +4,9 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
 import { toast, ToastContainer } from "react-toastify";
 import API_BASE_URL from "../api.js";
-import Input from "../Components/Input";
-import Button from "../Components/Button";
+import Input from "../Components/atoms/Input";
+import Button from "../Components/atoms/Button";
+import Checkbox from "../Components/molecules/Checkbox";
 import "./LoginPage.css";
 
 const SignupPage = () => {
@@ -180,7 +181,7 @@ const SignupPage = () => {
                             value={formData.password}
                             onChange={(e) => handleInputChange("password", e.target.value)}
                             error={errors.password}
-                            icon={
+                            rightIcon={
                                 <button
                                     type="button"
                                     onClick={() => setPasswordVisible(!passwordVisible)}
@@ -189,7 +190,6 @@ const SignupPage = () => {
                                     {passwordVisible ? <FaEyeSlash /> : <FaEye />}
                                 </button>
                             }
-                            iconPosition="right"
                             required
                         />
 
@@ -200,7 +200,7 @@ const SignupPage = () => {
                             value={formData.confirmPassword}
                             onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
                             error={errors.confirmPassword}
-                            icon={
+                            rightIcon={
                                 <button
                                     type="button"
                                     onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
@@ -209,7 +209,6 @@ const SignupPage = () => {
                                     {confirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
                                 </button>
                             }
-                            iconPosition="right"
                             required
                         />
 
@@ -243,17 +242,11 @@ const SignupPage = () => {
                             required
                         />
 
-                        <div style={{ display: "flex", alignItems: "center", gap: "var(--spacing-sm)" }}>
-                            <input
-                                type="checkbox"
-                                checked={formData.agreeToTerms}
-                                onChange={(e) => handleInputChange("agreeToTerms", e.target.checked)}
-                                style={{ width: "18px", height: "18px", cursor: "pointer" }}
-                            />
-                            <span style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>
-                                I accept the Terms of Use & Privacy Policy
-                            </span>
-                        </div>
+                        <Checkbox
+                            label="I accept the Terms of Use & Privacy Policy"
+                            checked={formData.agreeToTerms}
+                            onChange={(val) => handleInputChange("agreeToTerms", val)}
+                        />
                         {errors.agreeToTerms && (
                             <span style={{ color: "var(--color-error)", fontSize: "var(--font-size-sm)" }}>
                                 {errors.agreeToTerms}
