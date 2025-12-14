@@ -200,6 +200,7 @@ const Admindash = () => {
                 {activePage === "report" && <Adminreport />}
                 {activePage === "outlet" && <AdminOutlet />}
                 {activePage === "deliveries" && <AdminDelivery />}
+                </div>
             </main>
         </div>
     );

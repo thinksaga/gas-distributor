@@ -90,6 +90,7 @@ const Blog = () => {
                         </div>
                     </div>
                 </div>
+                </div>
             </section>
 
             {/* Featured Post */}

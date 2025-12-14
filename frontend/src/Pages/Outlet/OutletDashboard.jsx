@@ -282,6 +282,7 @@ const OutletDashboard = () => {
         {activePage === "report" && <OutletPerformance />}
         {activePage === "customers" && <Customer />}
         {activePage === "delivery" && <OutletDeliveries />}
+        </div>
       </main>
     </div>
   );

@@ -152,6 +152,7 @@ const SuperAdmindash = () => {
               <FaSignOutAlt className="nav-icon" /> Logout
             </button>
           </div>
+        </div>
         </aside>
 
       <main className="dashboard-main">
