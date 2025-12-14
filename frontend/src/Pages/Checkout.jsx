@@ -1,64 +1,207 @@
 import React, { useState } from "react";
-import { useLocation } from "react-router-dom";
-import PaymentPopup from "./PaymentPopup";
+import { useLocation, useNavigate } from "react-router-dom";
+import Card from "../Components/Card";
+import Button from "../Components/Button";
+import Input from "../Components/Input";
+import Modal from "../Components/Modal";
+import { FaCheckCircle, FaShoppingCart } from "react-icons/fa";
+import { toast, ToastContainer } from "react-toastify";
+import "./Checkout.css";
 
 const Checkout = () => {
   const location = useLocation();
+  const navigate = useNavigate();
   const product = location.state?.product;
+  const selectedBranch = location.state?.selectedBranch;
 
-  // Quantity State
   const [quantity, setQuantity] = useState(1);
-  const [isPaymentPopupOpen, setIsPaymentPopupOpen] = useState(false);
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [contactNumber, setContactNumber] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   if (!product) {
-    return <div className="p-10 text-red-600 font-bold">Product not found!</div>;
+    return (
+      <div className="checkout-error">
+        <Card padding="xl">
+          <h2>Product not found!</h2>
+          <p>Please go back and select a product</p>
+          <Button variant="primary" onClick={() => navigate("/product-list")}>
+            Back to Products
+          </Button>
+        </Card>
+      </div>
+    );
   }
 
-  return (
-    <div className="p-10">
-      <h1 className="text-2xl font-bold mb-4">Order Summary</h1>
+  const totalPrice = product.price * quantity;
 
-      {/* Product Details */}
-      <div className="flex justify-between border p-4 rounded-lg">
-        <div className="flex items-center">
-          <img src={product.image} alt={product.name} className="w-32 h-32 mr-4" />
-          <div>
-            <h2 className="text-xl font-bold">{product.name}</h2>
-            <p className="text-gray-600">LKR {product.price} per unit</p>
+  const handlePlaceOrder = async () => {
+    if (!deliveryAddress || !contactNumber) {
+      toast.error("Please fill in all required fields");
+      return;
+    }
+
+    setIsProcessing(true);
+
+    // Simulate API call
+    setTimeout(() => {
+      setIsProcessing(false);
+      setShowSuccessModal(true);
+      toast.success("Order placed successfully!");
+    }, 2000);
+  };
+
+  const handleModalClose = () => {
+    setShowSuccessModal(false);
+    navigate("/user-dashboard");
+  };
+
+  return (
+    <div className="checkout-page">
+      <ToastContainer />
+
+      <div className="checkout-container">
+        <h1 className="checkout-title">Checkout</h1>
+
+        <div className="checkout-grid">
+          {/* Order Summary */}
+          <div className="order-summary-section">
+            <Card padding="lg">
+              <h2 className="section-title">Order Summary</h2>
+
+              <div className="product-summary">
+                <img
+                  src={product.image || "/gas-cylinder-placeholder.png"}
+                  alt={product.name}
+                  className="summary-image"
+                />
+                <div className="summary-details">
+                  <h3 className="summary-product-name">{product.name}</h3>
+                  <p className="summary-price">₹{product.price} per unit</p>
+                  {selectedBranch && (
+                    <p className="summary-branch">Branch: {selectedBranch}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="quantity-selector">
+                <label className="quantity-label">Quantity:</label>
+                <div className="quantity-controls">
+                  <button
+                    className="qty-btn"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    -
+                  </button>
+                  <span className="qty-value">{quantity}</span>
+                  <button
+                    className="qty-btn"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              <div className="price-breakdown">
+                <div className="price-row">
+                  <span>Subtotal:</span>
+                  <span>₹{totalPrice}</span>
+                </div>
+                <div className="price-row">
+                  <span>Delivery Fee:</span>
+                  <span>₹50</span>
+                </div>
+                <div className="price-row total-row">
+                  <span>Total:</span>
+                  <span>₹{totalPrice + 50}</span>
+                </div>
+              </div>
+            </Card>
+          </div>
+
+          {/* Delivery & Payment */}
+          <div className="delivery-payment-section">
+            <Card padding="lg" className="delivery-card">
+              <h2 className="section-title">Delivery Information</h2>
+
+              <Input
+                label="Delivery Address"
+                type="textarea"
+                placeholder="Enter your complete delivery address"
+                value={deliveryAddress}
+                onChange={(e) => setDeliveryAddress(e.target.value)}
+                required
+                rows={3}
+              />
+
+              <Input
+                label="Contact Number"
+                type="tel"
+                placeholder="Enter your contact number"
+                value={contactNumber}
+                onChange={(e) => setContactNumber(e.target.value)}
+                required
+              />
+            </Card>
+
+            <Card padding="lg" className="payment-card">
+              <h2 className="section-title">Payment Method</h2>
+
+              <div className="payment-options">
+                <label className="payment-option">
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="cod"
+                    checked={paymentMethod === "cod"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
+                  <span>Cash on Delivery</span>
+                </label>
+
+                <label className="payment-option">
+                  <input
+                    type="radio"
+                    name="payment"
+                    value="online"
+                    checked={paymentMethod === "online"}
+                    onChange={(e) => setPaymentMethod(e.target.value)}
+                  />
+                  <span>Online Payment</span>
+                </label>
+              </div>
+            </Card>
+
+            <Button
+              variant="primary"
+              size="lg"
+              fullWidth
+              onClick={handlePlaceOrder}
+              disabled={isProcessing}
+            >
+              {isProcessing ? "Processing..." : `Place Order - ₹${totalPrice + 50}`}
+            </Button>
           </div>
         </div>
       </div>
 
-      {/* Quantity Input */}
-      <div className="mt-6">
-        <label className="text-xl font-bold">Quantity</label>
-        <input
-          type="number"
-          min="1"
-          value={quantity}
-          onChange={(e) => setQuantity(Number(e.target.value))}
-          className="border p-2 rounded w-20 ml-4"
-        />
-      </div>
-
-      {/* Total Price */}
-      <div className="mt-4 text-xl font-bold">
-        Total Price: LKR {product.price * quantity}
-      </div>
-
-      {/* Payment Section */}
-      <div className="mt-6">
-        <h2 className="text-xl font-bold">Payment Method</h2>
-        <p className="text-gray-600 mb-4">Check / Money Order</p>
-        <button 
-          onClick={() => setIsPaymentPopupOpen(true)}
-          className="bg-green-500 text-white px-6 py-2 rounded hover:bg-green-700"
-        >
-          Proceed to Payment
-        </button>
-      </div>
-
-      {isPaymentPopupOpen && <PaymentPopup onClose={() => setIsPaymentPopupOpen(false)} />}
+      {/* Success Modal */}
+      {showSuccessModal && (
+        <Modal onClose={handleModalClose} size="md">
+          <div className="success-modal-content">
+            <FaCheckCircle className="success-icon" />
+            <h2>Order Placed Successfully!</h2>
+            <p>Your order has been confirmed and will be delivered soon.</p>
+            <p className="order-number">Order #: {Math.random().toString(36).substr(2, 9).toUpperCase()}</p>
+            <Button variant="primary" onClick={handleModalClose}>
+              Go to Dashboard
+            </Button>
+          </div>
+        </Modal>
+      )}
     </div>
   );
 };

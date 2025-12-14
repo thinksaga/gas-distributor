@@ -1,22 +1,56 @@
-import mongoose from "mongoose";
 import RequestModel from "../models/request.model.js";
 import Outlet from "../models/outlet.model.js";
 import Gasstock from "../models/gasstock.model.js";
+import { createNotification } from "./notification.controller.js";
 
 export const changeStatus = async (req, res) => {
-    const session = await mongoose.startSession()
-    session.startTransaction()
-
     try {
         const {id, status} = req.body
 
-        await RequestModel.findByIdAndUpdate(id, {status}, {session})
+        const request = await RequestModel.findByIdAndUpdate(id, {status}, {new: true})
+            .populate('consumerId', 'name email')
+            .populate('productId', 'name');
 
-        await session.commitTransaction()
-        await session.endSession()
+        if (!request) {
+            return res.status(404).json({success: false, message: "Request not found"})
+        }
+
+        // Create notification for the consumer
+        let notificationTitle = '';
+        let notificationMessage = '';
+
+        switch(status) {
+            case 'approved':
+                notificationTitle = 'Request Approved';
+                notificationMessage = `Your request for ${request.gasType || 'gas'} has been approved.`;
+                break;
+            case 'rejected':
+                notificationTitle = 'Request Rejected';
+                notificationMessage = `Your request for ${request.gasType || 'gas'} has been rejected.`;
+                break;
+            case 'delivered':
+                notificationTitle = 'Gas Delivered';
+                notificationMessage = `Your ${request.gasType || 'gas'} has been successfully delivered.`;
+                break;
+            case 'pending':
+                notificationTitle = 'Request Processing';
+                notificationMessage = `Your request for ${request.gasType || 'gas'} is being processed.`;
+                break;
+            default:
+                notificationTitle = 'Request Status Updated';
+                notificationMessage = `Your request status has been updated to ${status}.`;
+        }
+
+        await createNotification(
+            request.consumerId._id || request.consumerId,
+            notificationTitle,
+            notificationMessage,
+            'request_status',
+            request._id
+        );
+
+        res.status(200).json({success: true, message: "Status updated"})
     } catch (error) {
-        await session.abortTransaction()
-        await session.endSession()
         res.status(500).json({message: error.message})
     }
 }

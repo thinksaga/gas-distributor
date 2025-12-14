@@ -1,9 +1,11 @@
-import {Router} from "express";
-import {signIn, signUp} from "../controllers/auth.controller.js";
+import express from 'express';
+import { signIn, signUp } from '../controllers/auth.controller.js';
+import { authLimiter, signupLimiter } from '../middleware/rateLimiter.js';
 
-const authRoute = Router();
+const router = express.Router();
 
-authRoute.post('/sign-in', signIn)
-authRoute.post('/sign-up', signUp)
+// Apply rate limiting to auth routes
+router.post('/sign-in', authLimiter, signIn);
+router.post('/sign-up', signupLimiter, signUp);
 
-export default authRoute
+export default router;

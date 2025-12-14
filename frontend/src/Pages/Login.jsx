@@ -1,99 +1,159 @@
-import {useContext, useState} from "react";
-import {motion} from "framer-motion";
-import {FaGoogle, FaGithub, FaFacebook, FaEye, FaEyeSlash} from "react-icons/fa";
-import {ToastContainer, toast} from "react-toastify";
+import { useContext, useState } from "react";
+import { FaEye, FaEyeSlash, FaGoogle, FaGithub, FaFacebook } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
 import axios from "axios";
-import {authcontext} from "../../context/authcontext.jsx";
+import { authcontext } from "../../context/authcontext.jsx";
+import API_BASE_URL from "../api.js";
+import Input from "../Components/Input";
+import Button from "../Components/Button";
+import "./Login.css";
 
-// eslint-disable-next-line react/prop-types
-const Login = ({togglePopup }) => {
+const Login = ({ togglePopup }) => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
-    // const navigate = useNavigate();
-    const {setIsLoggedIn, setUserRole} = useContext(authcontext);
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
+    const { setIsLoggedIn, setUserRole, setShowLogin } = useContext(authcontext);
 
-    const handleLogin = (e) => {
+    const validateForm = () => {
+        const newErrors = {};
+        if (!username.trim()) {
+            newErrors.username = "Username is required";
+        }
+        if (!password) {
+            newErrors.password = "Password is required";
+        } else if (password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+        }
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleLogin = async (e) => {
         e.preventDefault();
 
+        if (!validateForm()) {
+            return;
+        }
+
+        setLoading(true);
         try {
-            axios.post("http://localhost:3001/api/v1/auth/sign-in", {username, password})
-                .then((res) => {
-                    localStorage.setItem("user", JSON.stringify(res.data));
-                    setIsLoggedIn(true);
-                    setUserRole(res.data.data.role || "user");
-                })
+            const res = await axios.post(`${API_BASE_URL}/auth/sign-in`, { username, password });
+            localStorage.setItem("user", JSON.stringify(res.data));
+            localStorage.setItem("token", res.data.data.token);
+            setIsLoggedIn(true);
+            setUserRole(res.data.data.role || "user");
+            if (setShowLogin) setShowLogin(false);
+            toast.success("Login successful!");
         } catch (error) {
-            toast.error("Invalid Credentials"+error);
+            toast.error(error.response?.data?.message || "Invalid credentials");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-r from-black/40 via-gray-800/30 to-black/40 backdrop-blur-sm">
-            <ToastContainer/>
-            <motion.div
-                initial={{opacity: 0, scale: 0.8}}
-                animate={{opacity: 1, scale: 1}}
-                exit={{opacity: 0, scale: 0.1}}
-                transition={{duration: 0.2}}
-                className="relative w-96 p-8 bg-white rounded-lg shadow-lg"
-            >
-                <button onClick={togglePopup}
-                        className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer">✖
+        <div className="login-overlay">
+            <ToastContainer />
+            <div className="login-container">
+                <button
+                    onClick={togglePopup}
+                    className="login-close"
+                    aria-label="Close login"
+                >
+                    ×
                 </button>
 
-                <div className="text-center">
-                    <img src="/logo.png" alt="GasByGas Logo" className="w-20 mx-auto mb-4"/>
-                    <h2 className="text-xl font-bold mb-4">Login</h2>
+                <div className="login-header">
+                    <div className="login-logo">
+                        <span className="logo-text">VayuGas</span>
+                    </div>
+                    <h2 className="login-title">Welcome Back</h2>
+                    <p className="login-subtitle">Sign in to your account to continue</p>
                 </div>
 
-                <form className="space-y-4" onSubmit={handleLogin}>
-                    <input
+                <form className="login-form" onSubmit={handleLogin}>
+                    <Input
+                        label="Username"
                         type="text"
-                        placeholder="Username"
-                        className="w-full p-2 border rounded"
+                        placeholder="Enter your username"
                         value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        onChange={(e) => {
+                            setUsername(e.target.value);
+                            setErrors({ ...errors, username: "" });
+                        }}
+                        error={errors.username}
+                        required
                     />
-                    <div className="relative">
-                        <input
-                            type={passwordVisible ? "text" : "password"}
-                            placeholder="Password"
-                            className="w-full p-2 border rounded pr-10"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setPasswordVisible(!passwordVisible)}
-                            className="absolute inset-y-0 right-3 flex items-center text-gray-600"
-                        >
-                            {passwordVisible ? <FaEyeSlash size={20}/> : <FaEye size={20}/>}
-                        </button>
+
+                    <Input
+                        label="Password"
+                        type={passwordVisible ? "text" : "password"}
+                        placeholder="Enter your password"
+                        value={password}
+                        onChange={(e) => {
+                            setPassword(e.target.value);
+                            setErrors({ ...errors, password: "" });
+                        }}
+                        error={errors.password}
+                        icon={
+                            <button
+                                type="button"
+                                onClick={() => setPasswordVisible(!passwordVisible)}
+                                className="password-toggle"
+                            >
+                                {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+                            </button>
+                        }
+                        iconPosition="right"
+                        required
+                    />
+
+                    <div className="login-options">
+                        <label className="remember-me">
+                            <input type="checkbox" />
+                            <span>Remember me</span>
+                        </label>
+                        <a href="#" className="forgot-password">
+                            Forgot password?
+                        </a>
                     </div>
-                    <p className="text-blue-600 text-sm text-right cursor-pointer">Forgot Password?</p>
-                    <button type="submit" className="w-full bg-blue-900 text-white py-2 rounded">Sign In</button>
+
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        size="lg"
+                        fullWidth
+                        disabled={loading}
+                    >
+                        {loading ? "Signing in..." : "Sign In"}
+                    </Button>
                 </form>
 
-                <p className="text-center mt-4 text-gray-600">Or continue with</p>
+                <div className="login-divider">
+                    <span>Or continue with</span>
+                </div>
 
-                <div className="flex justify-center space-x-4 mt-2">
-                    <button className="p-2 bg-gray-200 rounded flex items-center gap-2 px-4">
-                        <FaGoogle size={20} className="text-red-500"/>
+                <div className="social-login">
+                    <button className="social-button">
+                        <FaGoogle />
                     </button>
-                    <button className="p-2 bg-gray-200 rounded flex items-center gap-2 px-4">
-                        <FaGithub size={20} className="text-gray-700"/>
+                    <button className="social-button">
+                        <FaGithub />
                     </button>
-                    <button className="p-2 bg-gray-200 rounded flex items-center gap-2 px-4">
-                        <FaFacebook size={20} className="text-blue-600"/>
+                    <button className="social-button">
+                        <FaFacebook />
                     </button>
                 </div>
 
-                <p className="text-center text-gray-600 mt-4">
-                    Don&#39;t have an account? <span className="text-blue-600 cursor-pointer">Register for free</span>
+                <p className="login-footer">
+                    Don't have an account?{" "}
+                    <a href="#" className="signup-link">
+                        Sign up for free
+                    </a>
                 </p>
-            </motion.div>
+            </div>
         </div>
     );
 };

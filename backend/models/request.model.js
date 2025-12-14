@@ -36,10 +36,15 @@ const requestSchema = new mongoose.Schema({
     outletId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Outlet',
-        required: true
+        required: false
+    },
+    adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Consumer',
+        required: false // Optional for now as requests might be created before assignment or linked via outlet
     },
 
-}, {timestamps: true});
+}, { timestamps: true });
 
 const Request = mongoose.model('Request', requestSchema);
 export default Request;

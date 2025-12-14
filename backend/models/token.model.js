@@ -5,6 +5,11 @@ const tokenSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    requestId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Request',
+        required: true,
+    },
     requestDate: {
         type: Date,
         required: true,

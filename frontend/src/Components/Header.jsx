@@ -1,48 +1,42 @@
-import React, { useRef } from "react";
+import React from "react";
+import { useNavigate } from "react-router-dom";
+import Button from "./Button";
+import "./Header.css";
 
 const Header = () => {
-  const videoRef = useRef(null);
-
-  const playVideo = () => {
-    if (videoRef.current) {
-      videoRef.current.play();
-    }
-  };
+  const navigate = useNavigate();
 
   return (
-    <header className="bg-white text-black">
-      {/* Hero Section */}
-      <div className="py-16">
-        <div className="container mx-auto flex flex-col md:flex-row items-center px-6 md:px-12">
-          {/* Left Content */}
-          <div className="md:w-1/2 text-center md:text-left">
-            <h1 className="text-4xl font-bold leading-tight">
-              Delivering Reliable Gas Solutions, <br /> Anytime, Anywhere!
-            </h1>
-            <p className="mt-4 text-lg">
-              When life demands more than you can handle, let GasByGas make it easier
-              with our smart, reliable gas delivery and payment system.
-            </p>
-
-            {/* "Get Started" Button */}
-            <button
-              onClick={playVideo}
-              className="mt-6 bg-blue-500 text-white px-6 py-3 rounded-lg shadow-md hover:bg-blue-700 transition"
+    <header className="hero-section">
+      <div className="hero-container">
+        <div className="hero-content">
+          <h1 className="hero-title animate-slideInUp">
+            Welcome to <span className="gradient-text">VayuGas</span>
+          </h1>
+          <p className="hero-subtitle animate-slideInUp">
+            Your trusted partner for seamless gas distribution and management
+          </p>
+          <div className="hero-buttons animate-slideInUp">
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => navigate("/products")}
             >
-              Get Started
-            </button>
+              Order Now
+            </Button>
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={() => navigate("/about")}
+            >
+              Learn More
+            </Button>
           </div>
-
-          {/* Right Video (Hidden Controls) */}
-          <div className="md:w-1/2 flex justify-center mt-6 md:mt-0">
-            <video
-              ref={videoRef}
-              className="w-[800px] h-auto rounded-lg shadow-md"
-              controls={false} // Hides controls
-            >
-              <source src="/Our Services.mp4" type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+        </div>
+        <div className="hero-image animate-fadeIn">
+          <div className="hero-illustration">
+            <div className="illustration-circle"></div>
+            <div className="illustration-circle-2"></div>
           </div>
         </div>
       </div>

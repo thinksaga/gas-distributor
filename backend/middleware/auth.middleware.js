@@ -1,4 +1,4 @@
-import {JWT_SECRET} from "../config/env.js";
+import { JWT_SECRET } from "../config/env.js";
 import jwt from "jsonwebtoken";
 import Consumer from "../models/consumer.model.js";
 
@@ -10,7 +10,8 @@ const authorize = async (req, res, next) => {
         }
 
         if (!token) {
-            return res.status(401).json({message: "Unauthorized"});
+            console.log("No token provided");
+            return res.status(401).json({ message: "Unauthorized" });
         }
 
         const decoded = jwt.verify(token, JWT_SECRET);
@@ -18,12 +19,14 @@ const authorize = async (req, res, next) => {
         const consumer = await Consumer.findById(decoded.id);
 
         if (!consumer) {
-            return res.status(404).json({message: "Consumer not found"});
+            console.log("Consumer not found for token");
+            return res.status(404).json({ message: "Consumer not found" });
         }
-        req.consumer = consumer;
+        req.user = consumer; // Changed from req.consumer to req.user to match controllers
         next();
     } catch (error) {
-        res.status(401).json({message: "Unauthorized", error: error});
+        console.error("Auth middleware error:", error.message);
+        res.status(401).json({ message: "Unauthorized", error: error });
     }
 }
 

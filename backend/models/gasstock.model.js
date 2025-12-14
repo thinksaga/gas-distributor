@@ -22,7 +22,12 @@ const gasstockSchema = new mongoose.Schema({
         ref: 'Product',
         required: true
     },
-}, {timestamps: true});
+    adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Consumer',
+        required: true
+    },
+}, { timestamps: true });
 
 const Gasstock = mongoose.model('Gasstock', gasstockSchema);
 export default Gasstock;

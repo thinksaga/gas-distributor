@@ -1,26 +1,47 @@
 import React, { useState } from "react";
-
-// Sample payment data (you can replace this with real data or mock data)
-const samplePayments = [
-  {
-    paymentID: "P12345",
-    productName: "Gas Cylinder - 5kg",
-    paymentDate: "2025-02-01",
-    status: "Successful",
-    deliveryDate: "2025-02-05",
-  },
-  {
-    paymentID: "P12346",
-    productName: "Gas Cylinder - 10kg",
-    paymentDate: "2025-02-03",
-    status: "Faild",
-    deliveryDate: "2025-02-07",
-  },
-  // Add more payment data here as needed
-];
+import Card from "../Components/Card";
+import Table from "../Components/Table";
+import Badge from "../Components/Badge";
+import Button from "../Components/Button";
+import { FaDownload, FaCalendar } from "react-icons/fa";
+import "./Paystatus.css";
 
 const Paystatus = () => {
-  // Calculate the difference in days between payment and delivery date
+  const samplePayments = [
+    {
+      paymentID: "P12345",
+      productName: "Gas Cylinder - 5kg",
+      amount: "₹850",
+      paymentDate: "2025-02-01",
+      status: "Successful",
+      deliveryDate: "2025-02-05",
+    },
+    {
+      paymentID: "P12346",
+      productName: "Gas Cylinder - 10kg",
+      amount: "₹1200",
+      paymentDate: "2025-02-03",
+      status: "Failed",
+      deliveryDate: "2025-02-07",
+    },
+    {
+      paymentID: "P12347",
+      productName: "Gas Cylinder - 12kg",
+      amount: "₹1500",
+      paymentDate: "2025-01-28",
+      status: "Successful",
+      deliveryDate: "2025-02-02",
+    },
+    {
+      paymentID: "P12348",
+      productName: "Gas Cylinder - 5kg",
+      amount: "₹850",
+      paymentDate: "2025-01-25",
+      status: "Pending",
+      deliveryDate: "2025-01-30",
+    },
+  ];
+
   const calculateDateDifference = (paymentDate, deliveryDate) => {
     const payment = new Date(paymentDate);
     const delivery = new Date(deliveryDate);
@@ -29,34 +50,87 @@ const Paystatus = () => {
     return differenceInDays;
   };
 
-  return (
-    <div className="bg-white p-6 rounded-lg shadow-md">
-      <h1 className="text-2xl font-semibold mb-4">Payment Status</h1>
+  const getStatusVariant = (status) => {
+    switch (status.toLowerCase()) {
+      case "successful": return "success";
+      case "pending": return "warning";
+      case "failed": return "error";
+      default: return "default";
+    }
+  };
 
-      <table className="min-w-full table-auto">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="py-2 px-4 text-left">Payment ID</th>
-            <th className="py-2 px-4 text-left">Product Name</th>
-            <th className="py-2 px-4 text-left">Days After Payment</th>
-            <th className="py-2 px-4 text-left">Payment Date</th>
-            <th className="py-2 px-4 text-left">Payment Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {samplePayments.map((payment) => (
-            <tr key={payment.paymentID} className="border-b">
-              <td className="py-2 px-4">{payment.paymentID}</td>
-              <td className="py-2 px-4">{payment.productName}</td>
-              <td className="py-2 px-4">
-                {calculateDateDifference(payment.paymentDate, payment.deliveryDate)} days
-              </td>
-              <td className="py-2 px-4">{payment.paymentDate}</td>
-              <td className="py-2 px-4">{payment.status}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+  const columns = [
+    { header: "Payment ID", accessor: "paymentID" },
+    { header: "Product", accessor: "productName" },
+    { header: "Amount", accessor: "amount" },
+    {
+      header: "Days to Delivery",
+      accessor: "paymentDate",
+      render: (value, row) => (
+        <span>{calculateDateDifference(value, row.deliveryDate)} days</span>
+      )
+    },
+    { header: "Payment Date", accessor: "paymentDate" },
+    {
+      header: "Status",
+      accessor: "status",
+      render: (value) => <Badge variant={getStatusVariant(value)}>{value}</Badge>
+    },
+    {
+      header: "Receipt",
+      accessor: "paymentID",
+      render: (value) => (
+        <Button variant="outline" size="sm">
+          <FaDownload /> Download
+        </Button>
+      )
+    }
+  ];
+
+  const totalSpent = samplePayments
+    .filter(p => p.status === "Successful")
+    .reduce((sum, p) => sum + parseInt(p.amount.replace("₹", "")), 0);
+
+  return (
+    <div className="paystatus-page">
+      <div className="paystatus-header">
+        <div>
+          <h1 className="page-title">Payment History</h1>
+          <p className="page-subtitle">View all your payment transactions</p>
+        </div>
+      </div>
+
+      <div className="stats-row">
+        <Card padding="lg" className="stat-card">
+          <div className="stat-content">
+            <div className="stat-icon success">₹</div>
+            <div>
+              <div className="stat-label">Total Spent</div>
+              <div className="stat-value">₹{totalSpent}</div>
+            </div>
+          </div>
+        </Card>
+
+        <Card padding="lg" className="stat-card">
+          <div className="stat-content">
+            <div className="stat-icon primary">
+              <FaCalendar />
+            </div>
+            <div>
+              <div className="stat-label">Total Transactions</div>
+              <div className="stat-value">{samplePayments.length}</div>
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <Card padding="lg">
+        <Table
+          columns={columns}
+          data={samplePayments}
+          emptyMessage="No payment history found"
+        />
+      </Card>
     </div>
   );
 };

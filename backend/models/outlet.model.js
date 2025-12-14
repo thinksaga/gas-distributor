@@ -15,6 +15,16 @@ const outletSchema = new mongoose.Schema({
         minLength: 3,
         maxLength: 1000
     },
+    city: {
+        type: String,
+        required: true,
+        trim: true
+    },
+    state: {
+        type: String,
+        required: true,
+        trim: true
+    },
     password: {
         type: String,
         required: true,
@@ -23,10 +33,15 @@ const outletSchema = new mongoose.Schema({
     },
     stockId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Stock',
+        ref: 'Gasstock',
+        // required: true  // Make optional for now
+    },
+    adminId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Consumer',
         required: true
     },
-}, {timestamps: true});
+}, { timestamps: true });
 
 const Outlet = mongoose.model('Outlet', outletSchema);
 export default Outlet;

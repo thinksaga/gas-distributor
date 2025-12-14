@@ -1,6 +1,6 @@
-import mongoose from "mongoose";
 import RequestModel from "../models/request.model.js";
 import Token from "../models/token.model.js";
+import Outlet from "../models/outlet.model.js";
 import generatePassword from "generate-password";
 
 export const getToken = (req, res) => {
@@ -11,7 +11,7 @@ export const verifyToken = async (req, res) => {
     try {
         const token = req.params.id;
 
-        const tokenData = await Token.findOne({token: token})
+        const tokenData = await Token.findOne({token: token}).populate('requestId');
 
         if (!tokenData) {
             return res.status(404).json({message: "Token not found"})
@@ -25,47 +25,50 @@ export const verifyToken = async (req, res) => {
 }
 
 export const requestToken = async (req, res) => {
-    const session = await mongoose.startSession()
-    session.startTransaction()
-
     try {
-        const {gasType, quantity, requestDate, status, approval, consumerId, outletId } = req.body;
+        const {gasType, quantity, outletId } = req.body;
+        const consumerId = req.user._id;
 
-        const newRequset = await RequestModel.create([{
+        // Validate outlet exists
+        const outlet = await Outlet.findById(outletId);
+        if (!outlet) {
+            return res.status(400).json({ message: "Invalid outlet" });
+        }
+
+        const newRequest = await RequestModel.create({
             gasType,
             quantity,
-            requestDate,
-            status,
-            approval,
+            requestDate: new Date(),
+            status: "pending",
+            approval: "pending",
             consumerId,
             outletId
-        }], {session})
+        });
 
-        const token = generatePassword.generate({
+        const tokenString = generatePassword.generate({
             length: 6,
             numbers: true,
             symbols: false,
             uppercase: false,
             excludeSimilarCharacters: true
-        })
-        console.log(token)
+        });
 
-        const newToken = await Token.create([{
-            token: token,
-            requestDate: Date.now(),
+        const newToken = await Token.create({
+            token: tokenString,
+            requestId: newRequest._id,
+            requestDate: new Date(),
             status: "pending",
-            expiryDate: Date.now() + 86400000,
-            pickupDate: Date.now() + 86400000,
-        }], {session})
+            expireDate: new Date(Date.now() + 86400000), // 1 day
+            pickUpDate: new Date(Date.now() + 86400000),
+        });
 
-        await session.commitTransaction()
-        session.endSession()
+        // Update request with tokenId
+        newRequest.tokenId = newToken._id;
+        await newRequest.save();
 
-        return res.status(201).json({success: true, message: "New token created", data: {token: newToken, request:newRequset}})
+        return res.status(201).json({success: true, message: "New token created", data: {token: newToken, request: newRequest}})
     }
     catch (error) {
-        session.abortTransaction()
-        session.endSession()
         res.status(500).json({message: error.message})
     }
 }

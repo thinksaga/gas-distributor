@@ -1,29 +1,33 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit } from "react-icons/fa";
-
-const initialProducts = [
-  {
-    productID: "456567",
-    productName: "Gas 2.3Kg",
-    productType: "Small",
-    pricePerUnit: 694,
-    image: "/2.3KG 1.png",
-    availableQuantity: 2800,
-    stockStatus: "In Stock",
-  },
-  {
-    productID: "789123",
-    productName: "Gas 5Kg",
-    productType: "Medium",
-    pricePerUnit: 1482,
-    image: "/gas5k-3 1.png",
-    availableQuantity: 50,
-    stockStatus: "Out of Stock",
-  },
-];
+import { getOutletStock, updateStock } from "../../services/outletService";
+import { toast } from "react-toastify";
 
 const OutletStock = () => {
-  const [products, setProducts] = useState(initialProducts);
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    loadStock();
+  }, []);
+
+  const loadStock = async () => {
+    try {
+      const data = await getOutletStock();
+      setProducts(data.map(stock => ({
+        productID: stock.productId._id,
+        productName: stock.productId.name,
+        productType: stock.productId.type,
+        pricePerUnit: stock.productId.price,
+        image: stock.productId.image,
+        availableQuantity: stock.quantity,
+        stockStatus: stock.quantity < 100 ? "Low Stock" : "In Stock"
+      })));
+    } catch (error) {
+      console.error("Failed to load stock", error);
+      toast.error("Failed to load stock");
+    }
+  };
+
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -41,6 +45,7 @@ const OutletStock = () => {
   // Define low and high stock thresholds
   const LOW_STOCK_THRESHOLD = 100;
   const HIGH_STOCK_THRESHOLD = 200;
+
 
   // Function to handle stock status based on quantity
   const handleStockStatus = (quantity) => {

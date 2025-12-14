@@ -1,101 +1,127 @@
 import React from "react";
+import Card from "./Card";
+import Button from "./Button";
+import Badge from "./Badge";
+import { FaCheckCircle, FaBell, FaShieldAlt, FaIndustry } from "react-icons/fa";
+import "./Feature.css";
 
 const features = [
   {
+    icon: <FaCheckCircle />,
     image: "/token-based.png",
     title: "Token-Based Gas Request System",
     description:
       "Guarantees gas pickup within two weeks; reschedules automatically if unavailable, ensuring fair, transparent distribution.",
+    badge: "Popular"
   },
   {
+    icon: <FaBell />,
     image: "/real-time.png",
     title: "Real-Time Delivery Notifications",
     description:
       "Sends SMS/email updates for token confirmation, delivery scheduling, and reminders, preventing missed pickups.",
+    badge: "New"
   },
   {
+    icon: <FaShieldAlt />,
     image: "/request-limitation.png",
     title: "NIC/Phone/Email-Based Request Limitation",
     description:
       "Restricts multiple gas requests using unique identification, ensuring fair distribution and preventing overstocking.",
+    badge: null
   },
   {
+    icon: <FaIndustry />,
     image: "/industry-service.png",
     title: "Separate Service for Businesses and Industries",
     description:
       "Offers tailored gas distribution for industries, validated by organizational certification, distinguishing residential and commercial needs effectively.",
+    badge: null
   },
 ];
 
 const Feature = () => {
   return (
-    <section className="py-16 bg-white">
-      <div className="max-w-6xl mx-auto text-center">
-        <h1 className="text-4xl font-bold text-gray-900">Features Just GasByGas Has</h1>
-        <p className="mt-4 text-lg text-gray-600">
-          When life gets overwhelming, GasByGas simplifies your needs with a smart,<br />
-          efficient gas distribution and delivery system.
-        </p>
-      </div>
+    <div className="feature-page">
+      {/* Hero Section */}
+      <section className="feature-hero">
+        <div className="feature-container">
+          <h1 className="feature-title">Features Just VayuGas Has</h1>
+          <p className="feature-subtitle">
+            When life gets overwhelming, VayuGas simplifies your needs with a smart,
+            efficient gas distribution and delivery system.
+          </p>
+        </div>
+      </section>
 
-      {/* Feature Grid */}
-      <div className="max-w-6xl mx-auto mt-10 grid grid-cols-1 md:grid-cols-2 gap-8 px-6 relative">
-        {features.map((feature, index) => (
-          <div key={index} className="relative flex items-center bg-gray-100 shadow-lg rounded-xl p-6">
-            {/* Feature Image */}
-            <div className="w-50 h-50 flex justify-center items-center bg-white rounded-xl shadow-md p-2">
-              <img src={feature.image} alt={feature.title} className="w-16 h-16" />
-            </div>
-
-            {/* Feature Description */}
-            <div className="ml-6">
-              <h3 className="text-xl font-semibold text-gray-900">{feature.title}</h3>
-              <p className="text-gray-700 text-sm">{feature.description}</p>
-            </div>
+      {/* Features Grid */}
+      <section className="features-section">
+        <div className="feature-container">
+          <div className="features-grid">
+            {features.map((feature, index) => (
+              <Card key={index} className="feature-card" hover padding="lg">
+                {feature.badge && (
+                  <div className="feature-badge-wrapper">
+                    <Badge variant={feature.badge === "New" ? "success" : "primary"} size="sm">
+                      {feature.badge}
+                    </Badge>
+                  </div>
+                )}
+                <div className="feature-icon-circle">
+                  <div className="feature-icon">{feature.icon}</div>
+                </div>
+                <div className="feature-image-wrapper">
+                  <img src={feature.image} alt={feature.title} className="feature-img" />
+                </div>
+                <h3 className="feature-card-title">{feature.title}</h3>
+                <p className="feature-card-description">{feature.description}</p>
+              </Card>
+            ))}
           </div>
-        ))}
-      </div>
+        </div>
+      </section>
 
       {/* Mobile App Section */}
-      <div className="flex flex-col md:flex-row items-center justify-center space-x-6 mt-16 px-6">
-        {/* Image on the left */}
-        <div className="w-full md:w-1/2 flex justify-center">
-          <img
-            src="/mobile_app.png"
-            alt="Gas Delivery"
-            className="w-[500px] h-auto"
-          />
-        </div>
+      <section className="mobile-app-section">
+        <div className="feature-container">
+          <div className="mobile-app-content">
+            <div className="mobile-app-image">
+              <img src="/mobile_app.png" alt="VayuGas Mobile App" />
+            </div>
 
-        {/* Text and Buttons on the right */}
-        <div className="w-full md:w-1/2 text-center md:text-left">
-          <p className="text-3xl font-bold text-gray-900">Use GasByGas In Mobile</p>
-          <p className="mt-4 text-gray-600">
-            We support multiple platforms to provide the best experience,<br />
-            allowing you to manage gas requests effortlessly.<br />
-            GasByGas makes life easier!
-          </p>
+            <div className="mobile-app-text">
+              <h2 className="mobile-app-title">Use VayuGas On Mobile</h2>
+              <p className="mobile-app-description">
+                We support multiple platforms to provide the best experience,
+                allowing you to manage gas requests effortlessly.
+                VayuGas makes life easier!
+              </p>
 
-          {/* Buttons positioned closer to the Gas Delivery image */}
-          <div className="mt-6 flex flex-col md:flex-row space-y-3 md:space-y-0 md:space-x-4">
-            <a
-              href="#"
-              className="bg-gray-200 text-blue-900 font-semibold px-6 py-3 rounded-lg flex items-center justify-center space-x-2 shadow hover:bg-amber-50 w-60"
-            >
-              <img src="/Apple.png" alt="Apple Store" className="w-6 h-6" />
-              <span>Apple Store</span>
-            </a>
-            <a
-              href="#"
-              className="bg-blue-600 text-white font-semibold px-6 py-3 rounded-lg flex items-center justify-center space-x-2 shadow hover:bg-blue-700 w-60"
-            >
-              <img src="/google-play.png" alt="Google Play" className="w-6 h-6" />
-              <span>Google Play</span>
-            </a>
+              <div className="app-store-buttons">
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="app-store-button"
+                  onClick={() => window.open("#", "_blank")}
+                >
+                  <img src="/Apple.png" alt="Apple Store" className="store-icon" />
+                  <span>Apple Store</span>
+                </Button>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  className="app-store-button"
+                  onClick={() => window.open("#", "_blank")}
+                >
+                  <img src="/google-play.png" alt="Google Play" className="store-icon" />
+                  <span>Google Play</span>
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   );
 };
 

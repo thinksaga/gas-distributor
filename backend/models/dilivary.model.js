@@ -19,6 +19,16 @@ const dilivarySchema = new mongoose.Schema({
         minLength: 3,
         maxLength: 1000
     },
+    requestId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Request',
+        required: true
+    },
+    outletId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Outlet',
+        required: true
+    },
 }, {timestamps: true});
 
 const Dilivary = mongoose.model('Dilivary', dilivarySchema);

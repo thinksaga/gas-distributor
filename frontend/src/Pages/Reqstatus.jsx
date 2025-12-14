@@ -1,66 +1,144 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import Card from "../Components/Card";
+import Table from "../Components/Table";
+import Badge from "../Components/Badge";
+import Button from "../Components/Button";
+import { FaEye, FaFilter, FaCopy } from "react-icons/fa";
+import { getUserRequests } from "../services/userService";
+import { toast } from "react-toastify";
+import "./Reqstatus.css";
 
 const Requeststatus = () => {
-  // Sample Order Data
-  const orders = [
-    { id: 7535, type: "2.3Kg Gas Cylinder", quantity: 1, date: "11/12/22", status: "Pending" },
-    { id: 5724, type: "5Kg Gas Cylinder", quantity: 1, date: "21/12/22", status: "Approved" },
-    { id: 2775, type: "12Kg Gas Cylinder", quantity: 1, date: "5/12/22", status: "In Progress" },
-    { id: 2275, type: "12Kg Gas Cylinder", quantity: 1, date: "8/12/22", status: "Delivered" },
-    { id: 2427, type: "5Kg Gas Cylinder", quantity: 1, date: "9/1/23", status: "Cancelled" },
-    { id: 2578, type: "5Kg Gas Cylinder", quantity: 1, date: "9/1/23", status: "Delivered" },
-    { id: 2757, type: "2.3Kg Gas Cylinder", quantity: 1, date: "15/12/23", status: "Pending" },
-    { id: 3757, type: "12Kg Gas Cylinder", quantity: 1, date: "6/6/23", status: "Approved" },
-    { id: 2474, type: "12Kg Gas Cylinder", quantity: 1, date: "11/11/22", status: "Pending" },
+  const [filter, setFilter] = useState("all");
+  const [requests, setRequests] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    loadRequests();
+  }, []);
+
+  const loadRequests = async () => {
+    try {
+      const data = await getUserRequests();
+      setRequests(data);
+    } catch (error) {
+      console.error("Failed to load requests", error);
+      toast.error("Failed to load requests");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const copyToken = (token) => {
+    navigator.clipboard.writeText(token);
+    toast.success("Token copied to clipboard!");
+  };
+
+  const filteredRequests = filter === "all"
+    ? requests
+    : requests.filter(request => request.status.toLowerCase() === filter.toLowerCase());
+
+  const getStatusVariant = (status) => {
+    switch (status.toLowerCase()) {
+      case "approved": return "success";
+      case "pending": return "warning";
+      case "rejected": return "error";
+      default: return "default";
+    }
+  };
+
+  const formatDate = (dateString) => {
+    return new Date(dateString).toLocaleDateString();
+  };
+
+  const columns = [
+    { header: "Request ID", accessor: "_id", render: (value) => value.slice(-6) },
+    { header: "Gas Type", accessor: "gasType" },
+    { header: "Quantity", accessor: "quantity" },
+    { header: "Request Date", accessor: "requestDate", render: formatDate },
+    {
+      header: "Status",
+      accessor: "status",
+      render: (value) => <Badge variant={getStatusVariant(value)}>{value}</Badge>
+    },
+    {
+      header: "Token",
+      accessor: "tokenId",
+      render: (value, row) => {
+        if (row.status === "approved" && value) {
+          return (
+            <div className="token-display">
+              <span className="token-code">{value.token}</span>
+              <Button variant="outline" size="sm" onClick={() => copyToken(value.token)}>
+                <FaCopy /> Copy
+              </Button>
+            </div>
+          );
+        }
+        return <span className="no-token">Not available</span>;
+      }
+    }
   ];
 
   return (
-    <div className="request-status-container p-6">
-
-      {/* Orders Header Section */}
-      <div className="flex justify-between items-center mb-6">
-        <h1 className="text-xl font-semibold">Orders</h1>
-        <button className="btn-order-history text-blue-600">Order History</button>
-      </div>
-
-      {/* Orders Table */}
-      <div className="overflow-x-auto bg-white rounded-lg shadow-md">
-        <table className="min-w-full table-auto">
-          <thead className="bg-gray-200">
-            <tr>
-              <th className="py-2 px-4 text-left">Product Type</th>
-              <th className="py-2 px-4 text-left">Quantity</th>
-              <th className="py-2 px-4 text-left">Order ID</th>
-              <th className="py-2 px-4 text-left">Order Date</th>
-              <th className="py-2 px-4 text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id}>
-                <td className="py-2 px-4">{order.type}</td>
-                <td className="py-2 px-4">{order.quantity}</td>
-                <td className="py-2 px-4">{order.id}</td>
-                <td className="py-2 px-4">{order.date}</td>
-                <td className={`py-2 px-4 status ${order.status.toLowerCase().replace(" ", "-")}`}>
-                  {order.status}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Pagination Section */}
-      <div className="flex justify-between items-center mt-4">
-        <button className="btn-prev text-blue-600" disabled>
-          Previous
-        </button>
-        <div className="text-center text-gray-600">
-          Page 1 of 10
+    <div className="reqstatus-page">
+      <div className="reqstatus-header">
+        <div>
+          <h1 className="page-title">My Requests</h1>
+          <p className="page-subtitle">Track all your gas cylinder requests</p>
         </div>
-        <button className="btn-next text-blue-600">Next</button>
       </div>
+
+      <Card padding="lg">
+        <div className="filter-section">
+          <div className="filter-label">
+            <FaFilter /> Filter by Status:
+          </div>
+          <div className="filter-buttons">
+            <Button
+              variant={filter === "all" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setFilter("all")}
+            >
+              All
+            </Button>
+            <Button
+              variant={filter === "pending" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setFilter("pending")}
+            >
+              Pending
+            </Button>
+            <Button
+              variant={filter === "approved" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setFilter("approved")}
+            >
+              Approved
+            </Button>
+            <Button
+              variant={filter === "rejected" ? "primary" : "outline"}
+              size="sm"
+              onClick={() => setFilter("rejected")}
+            >
+              Rejected
+            </Button>
+          </div>
+        </div>
+
+        {loading ? (
+          <div className="loading-container">
+            <div className="spinner"></div>
+            <p>Loading requests...</p>
+          </div>
+        ) : (
+          <Table
+            columns={columns}
+            data={filteredRequests}
+            emptyMessage="No requests found"
+          />
+        )}
+      </Card>
     </div>
   );
 };

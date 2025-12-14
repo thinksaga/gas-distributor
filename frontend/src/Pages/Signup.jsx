@@ -1,133 +1,274 @@
-import {useState} from "react";
-import {motion} from "framer-motion";
-import {FaEye, FaEyeSlash} from "react-icons/fa";
+import { useState } from "react";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import axios from "axios";
-import {toast, ToastContainer} from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import API_BASE_URL from "../api.js";
+import Input from "../Components/Input";
+import Button from "../Components/Button";
+import "./Signup.css";
 
-// eslint-disable-next-line react/prop-types
-const Signup = ({togglePopup}) => {
+const Signup = ({ togglePopup }) => {
     const [passwordVisible, setPasswordVisible] = useState(false);
     const [confirmPasswordVisible, setConfirmPasswordVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
+    const [errors, setErrors] = useState({});
     const [formData, setFormData] = useState({
-        firstname: '',
-        lastname: '',
-        username: '',
-        email: '',
-        contactNumber: '',
-        password: '',
-        confirmPassword: '',
-        streetLine1: '',
-        streetLine2: '',
-        city: ''
+        firstname: "",
+        lastname: "",
+        username: "",
+        email: "",
+        contactNumber: "",
+        password: "",
+        confirmPassword: "",
+        street: "",
+        city: "",
+        agreeToTerms: false,
     });
 
-    const handleSignUp = (e) => {
+    const validateForm = () => {
+        const newErrors = {};
+
+        if (!formData.firstname.trim()) newErrors.firstname = "First name is required";
+        if (!formData.lastname.trim()) newErrors.lastname = "Last name is required";
+        if (!formData.username.trim()) newErrors.username = "Username is required";
+
+        if (!formData.email.trim()) {
+            newErrors.email = "Email is required";
+        } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
+            newErrors.email = "Email is invalid";
+        }
+
+        if (!formData.contactNumber.trim()) {
+            newErrors.contactNumber = "Contact number is required";
+        } else if (!/^\d{10}$/.test(formData.contactNumber)) {
+            newErrors.contactNumber = "Contact number must be 10 digits";
+        }
+
+        if (!formData.password) {
+            newErrors.password = "Password is required";
+        } else if (formData.password.length < 6) {
+            newErrors.password = "Password must be at least 6 characters";
+        }
+
+        if (formData.password !== formData.confirmPassword) {
+            newErrors.confirmPassword = "Passwords do not match";
+        }
+
+        if (!formData.street.trim()) newErrors.street = "Street address is required";
+        if (!formData.city.trim()) newErrors.city = "City is required";
+
+        if (!formData.agreeToTerms) {
+            newErrors.agreeToTerms = "You must accept the terms and conditions";
+        }
+
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
+    };
+
+    const handleInputChange = (field, value) => {
+        setFormData({ ...formData, [field]: value });
+        setErrors({ ...errors, [field]: "" });
+    };
+
+    const handleSignUp = async (e) => {
         e.preventDefault();
+
+        if (!validateForm()) {
+            toast.error("Please fix the errors in the form");
+            return;
+        }
+
+        setLoading(true);
         try {
-            axios.post('http://localhost:3001/api/v1/auth/sign-up', {formData});
-            toast.success('User created successfully');
+            await axios.post(`${API_BASE_URL}/auth/sign-up`, {
+                firstname: formData.firstname,
+                lastname: formData.lastname,
+                username: formData.username,
+                email: formData.email,
+                contactNumber: formData.contactNumber,
+                password: formData.password,
+                street: formData.street,
+                city: formData.city,
+            });
+            toast.success("Account created successfully!");
+            setTimeout(() => togglePopup(), 1500);
         } catch (error) {
-            toast.error(error.response.data.message);
+            toast.error(error.response?.data?.message || "Signup failed");
+        } finally {
+            setLoading(false);
         }
     };
 
     return (
-        <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-gradient-to-r from-black/40 via-gray-800/30 to-black/40 backdrop-blur-sm">
-            <motion.div
-                initial={{opacity: 0, scale: 0.8}}
-                animate={{opacity: 1, scale: 1}}
-                exit={{opacity: 0, scale: 0.1}}
-                transition={{duration: 0.2}}
-                className="relative w-full max-w-2xl p-8 bg-white rounded-lg shadow-lg"
-            >
-                <ToastContainer/>
-                {/* Close Button */}
+        <div className="signup-overlay">
+            <ToastContainer />
+            <div className="signup-container">
                 <button
                     onClick={togglePopup}
-                    className="absolute top-2 right-2 text-gray-500 hover:text-gray-700 cursor-pointer"
+                    className="signup-close"
+                    aria-label="Close signup"
                 >
-                    ✖
+                    ×
                 </button>
 
-                <h2 className="text-3xl font-bold text-center mb-2">Sign Up</h2>
-                <p className="text-gray-600 text-center mb-4">Please fill in this form to create an account!</p>
-
-                <form className="space-y-4">
-                    <div className="flex space-x-4">
-                        <input type="text" placeholder="First Name" className="w-1/2 p-2 border rounded"
-                               onChange={e => setFormData({...formData, firstname: e.target.value})}/>
-                        <input type="text" placeholder="Last Name" className="w-1/2 p-2 border rounded"
-                               onChange={e => setFormData({...formData, lastname: e.target.value})}/>
-                    </div>
-                    <input type="text" placeholder="Username" className="w-full p-2 border rounded"
-                           onChange={e => setFormData({...formData, username: e.target.value})}/>
-                    <input type="email" placeholder="Email" className="w-full p-2 border rounded"
-                           onChange={e => setFormData({...formData, email: e.target.value})}/>
-                    <input type="text" placeholder="Contact Number" className="w-full p-2 border rounded"
-                           onChange={e => setFormData({...formData, contactNumber: e.target.value})}/>
-
-                    {/* Password Field */}
-                    <div className="relative">
-                        <input
-                            type={passwordVisible ? "text" : "password"}
-                            placeholder="Password"
-                            className="w-full p-2 border rounded pr-10"
-                            onChange={e => setFormData({...formData, password: e.target.value})}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setPasswordVisible(!passwordVisible)}
-                            className="absolute inset-y-0 right-3 flex items-center text-gray-600"
-                        >
-                            {passwordVisible ? <FaEyeSlash size={20}/> : <FaEye size={20}/>}
-                        </button>
-                    </div>
-
-                    {/* Confirm Password Field */}
-                    <div className="relative">
-                        <input
-                            type={confirmPasswordVisible ? "text" : "password"}
-                            placeholder="Confirm Password"
-                            className="w-full p-2 border rounded pr-10"
-                            onChange={e => setFormData({...formData, confirmPassword: e.target.value})}
-                        />
-                        <button
-                            type="button"
-                            onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
-                            className="absolute inset-y-0 right-3 flex items-center text-gray-600"
-                        >
-                            {confirmPasswordVisible ? <FaEyeSlash size={20}/> : <FaEye size={20}/>}
-                        </button>
-                    </div>
-
-                    <p className="text-gray-600">Address</p>
-                    <div className="flex space-x-2">
-                        <input type="text" placeholder="Street Line 1" className="w-1/3 p-2 border rounded"
-                               onChange={e => setFormData({...formData, streetLine1: e.target.value})}/>
-                        <input type="text" placeholder="Street Line 2" className="w-1/3 p-2 border rounded"
-                               onChange={e => setFormData({...formData, streetLine2: e.target.value})}/>
-                        <input type="text" placeholder="City" className="w-1/3 p-2 border rounded"
-                               onChange={e => setFormData({...formData, city: e.target.value})}/>
-                    </div>
-
-                    <div className="flex items-center space-x-2">
-                        <input type="checkbox" id="terms" className="w-4 h-4"/>
-                        <label htmlFor="terms" className="text-gray-600">
-                            I accept the <span
-                            className="text-blue-600 cursor-pointer">Terms of Use & Privacy Policy</span>.
-                        </label>
-                    </div>
-
-                    <button className="w-full bg-blue-900 text-white py-3 rounded text-lg font-bold"
-                            onClick={handleSignUp}>Sign Up
-                    </button>
-
-                    <p className="text-center text-gray-600 mt-4">
-                        Already have an account? <span className="text-blue-600 cursor-pointer">Log in here.</span>
+                <div className="signup-header">
+                    <h2 className="signup-title">Create Account</h2>
+                    <p className="signup-subtitle">
+                        Fill in the form below to create your account
                     </p>
+                </div>
+
+                <form className="signup-form" onSubmit={handleSignUp}>
+                    <div className="form-row">
+                        <Input
+                            label="First Name"
+                            type="text"
+                            placeholder="Enter your first name"
+                            value={formData.firstname}
+                            onChange={(e) => handleInputChange("firstname", e.target.value)}
+                            error={errors.firstname}
+                            required
+                        />
+                        <Input
+                            label="Last Name"
+                            type="text"
+                            placeholder="Enter your last name"
+                            value={formData.lastname}
+                            onChange={(e) => handleInputChange("lastname", e.target.value)}
+                            error={errors.lastname}
+                            required
+                        />
+                    </div>
+
+                    <Input
+                        label="Username"
+                        type="text"
+                        placeholder="Choose a username"
+                        value={formData.username}
+                        onChange={(e) => handleInputChange("username", e.target.value)}
+                        error={errors.username}
+                        required
+                    />
+
+                    <Input
+                        label="Email"
+                        type="email"
+                        placeholder="Enter your email"
+                        value={formData.email}
+                        onChange={(e) => handleInputChange("email", e.target.value)}
+                        error={errors.email}
+                        required
+                    />
+
+                    <Input
+                        label="Contact Number"
+                        type="tel"
+                        placeholder="Enter your 10-digit contact number"
+                        value={formData.contactNumber}
+                        onChange={(e) => handleInputChange("contactNumber", e.target.value)}
+                        error={errors.contactNumber}
+                        required
+                    />
+
+                    <Input
+                        label="Password"
+                        type={passwordVisible ? "text" : "password"}
+                        placeholder="Create a password (min 6 characters)"
+                        value={formData.password}
+                        onChange={(e) => handleInputChange("password", e.target.value)}
+                        error={errors.password}
+                        icon={
+                            <button
+                                type="button"
+                                onClick={() => setPasswordVisible(!passwordVisible)}
+                                className="password-toggle"
+                            >
+                                {passwordVisible ? <FaEyeSlash /> : <FaEye />}
+                            </button>
+                        }
+                        iconPosition="right"
+                        required
+                    />
+
+                    <Input
+                        label="Confirm Password"
+                        type={confirmPasswordVisible ? "text" : "password"}
+                        placeholder="Re-enter your password"
+                        value={formData.confirmPassword}
+                        onChange={(e) => handleInputChange("confirmPassword", e.target.value)}
+                        error={errors.confirmPassword}
+                        icon={
+                            <button
+                                type="button"
+                                onClick={() => setConfirmPasswordVisible(!confirmPasswordVisible)}
+                                className="password-toggle"
+                            >
+                                {confirmPasswordVisible ? <FaEyeSlash /> : <FaEye />}
+                            </button>
+                        }
+                        iconPosition="right"
+                        required
+                    />
+
+                    <div className="address-section">
+                        <h3 className="section-title">Address Information</h3>
+                        <Input
+                            label="Street Address"
+                            type="text"
+                            placeholder="Enter your street address"
+                            value={formData.street}
+                            onChange={(e) => handleInputChange("street", e.target.value)}
+                            error={errors.street}
+                            required
+                        />
+                        <Input
+                            label="City"
+                            type="text"
+                            placeholder="Enter your city"
+                            value={formData.city}
+                            onChange={(e) => handleInputChange("city", e.target.value)}
+                            error={errors.city}
+                            required
+                        />
+                    </div>
+
+                    <div className="terms-section">
+                        <label className="terms-checkbox">
+                            <input
+                                type="checkbox"
+                                checked={formData.agreeToTerms}
+                                onChange={(e) => handleInputChange("agreeToTerms", e.target.checked)}
+                            />
+                            <span>
+                                I accept the{" "}
+                                <a href="#" className="terms-link">
+                                    Terms of Use & Privacy Policy
+                                </a>
+                            </span>
+                        </label>
+                        {errors.agreeToTerms && (
+                            <span className="terms-error">{errors.agreeToTerms}</span>
+                        )}
+                    </div>
+
+                    <Button
+                        type="submit"
+                        variant="primary"
+                        size="lg"
+                        fullWidth
+                        disabled={loading}
+                    >
+                        {loading ? "Creating Account..." : "Sign Up"}
+                    </Button>
                 </form>
-            </motion.div>
+
+                <p className="signup-footer">
+                    Already have an account?{" "}
+                    <a href="#" className="login-link">
+                        Log in here
+                    </a>
+                </p>
+            </div>
         </div>
     );
 };
