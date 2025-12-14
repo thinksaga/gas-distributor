@@ -1,7 +1,7 @@
 import React from "react";
-import Card from "./Card";
-import Badge from "./Badge";
-import Button from "./Button";
+import Card from "./atoms/Card";
+import Badge from "./atoms/Badge";
+import Button from "./atoms/Button";
 import { FaCalendar, FaUser, FaArrowRight, FaNewspaper, FaSearch } from "react-icons/fa";
 import "./Blog.css";
 

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
-import Card from "./Card";
-import Button from "./Button";
+import Card from "./atoms/Card";
+import Button from "./atoms/Button";
 import Input from "./Input";
 import { FaPhone, FaEnvelope, FaClock, FaMapMarkerAlt, FaQuestionCircle, FaComments, FaChevronDown, FaChevronUp, FaHeadset, FaPaperPlane } from "react-icons/fa";
 import { toast, ToastContainer } from "react-toastify";

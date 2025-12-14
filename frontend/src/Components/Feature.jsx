@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import Card from "./Card";
-import Button from "./Button";
-import Badge from "./Badge";
+import Card from "./atoms/Card";
+import Button from "./atoms/Button";
+import Badge from "./atoms/Badge";
 import { FaCheckCircle, FaBell, FaShieldAlt, FaIndustry, FaMobileAlt, FaQrcode, FaMapMarkerAlt, FaClock, FaStar, FaDownload, FaPlay } from "react-icons/fa";
 import "./Feature.css";
 

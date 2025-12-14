@@ -1,7 +1,7 @@
 import React from "react";
-import Card from "./Card";
-import Button from "./Button";
-import Badge from "./Badge";
+import Card from "./atoms/Card";
+import Button from "./atoms/Button";
+import Badge from "./atoms/Badge";
 import { FaBriefcase, FaUsers, FaRocket, FaHeart, FaGlobe, FaLaptopCode, FaArrowRight, FaHandshake } from "react-icons/fa";
 import "./Career.css";
 
