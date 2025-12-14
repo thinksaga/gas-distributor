@@ -15,6 +15,8 @@ import { useNavigate } from "react-router-dom";
 // Lazy load components for better performance
 const Login = lazy(() => import("./Pages/Login"));
 const Signup = lazy(() => import("./Pages/Signup"));
+const LoginPage = lazy(() => import("./Pages/LoginPage"));
+const SignupPage = lazy(() => import("./Pages/SignupPage"));
 const UserDash = lazy(() => import("./Pages/Userdash"));
 const Requeststatus = lazy(() => import("./Pages/Reqstatus"));
 const ProductList = lazy(() => import("./Pages/ProductList"));
@@ -77,6 +79,10 @@ function App() {
       <Routes>
         {/* Redirect based on login state using imperative navigation to avoid Navigate loops */}
         <Route path="/" element={<HomeRouter activeSection={activeSection} Header={Header} About={About} Feature={Feature} Support={Support} />} />
+
+        {/* Auth Routes */}
+        <Route path="/login" element={!isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><LoginPage /></Suspense> : <Navigate to="/" />} />
+        <Route path="/signup" element={!isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><SignupPage /></Suspense> : <Navigate to="/" />} />
 
         {/* Protected Routes */}
     <Route path="/user-dashboard" element={!isAuthChecked ? <LoadingSpinner /> : (isLoggedIn && userRole === "user" ? <Suspense fallback={<LoadingSpinner />}><UserDash /></Suspense> : <Navigate to="/" />)} />

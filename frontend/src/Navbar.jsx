@@ -1,7 +1,9 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { FaBars, FaTimes } from "react-icons/fa";
 import Button from "./Components/Button";
 import "./Navbar.css";
+import "./Components/NavbarModern.css";
 
 const Navbar = ({ homebtn, abtBtn, febtn, supbtn }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);

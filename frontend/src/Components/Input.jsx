@@ -1,5 +1,6 @@
 import React from 'react';
 import './Input.css';
+import './ModernComponents.css';
 
 const Input = ({
     type = 'text',
@@ -8,17 +9,20 @@ const Input = ({
     value,
     onChange,
     error,
+    success,
     disabled = false,
     required = false,
     icon,
     iconPosition = 'left',
+    helperText,
     className = '',
     ...props
 }) => {
     const inputClasses = [
-        'input-field',
-        error ? 'input-error' : '',
-        icon ? `input-with-icon-${iconPosition}` : '',
+        'input-modern',
+        error ? 'input-modern-error' : '',
+        success ? 'input-modern-success' : '',
+        icon ? 'with-icon' : '',
         disabled ? 'input-disabled' : '',
         className
     ].filter(Boolean).join(' ');
@@ -50,6 +54,7 @@ const Input = ({
                 )}
             </div>
             {error && <span className="input-error-message">{error}</span>}
+            {helperText && !error && <span className="input-helper-text">{helperText}</span>}
         </div>
     );
 };

@@ -7,6 +7,7 @@ import API_BASE_URL from "../api.js";
 import Input from "../Components/Input";
 import Button from "../Components/Button";
 import "./Login.css";
+import "./LoginModern.css";
 
 const Login = ({ togglePopup }) => {
     const [passwordVisible, setPasswordVisible] = useState(false);

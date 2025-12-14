@@ -16,7 +16,8 @@ const signUpSchema = Joi.object({
         contactNumber: Joi.string().pattern(/^[0-9]{10,12}$/).required(),
         streetLine1: Joi.string().min(5).required(),
         streetLine2: Joi.string().allow(''),
-        city: Joi.string().min(2).required()
+        city: Joi.string().min(2).required(),
+        state: Joi.string().min(2).required()
     }).required()
 });
 
@@ -42,7 +43,8 @@ export const signUp = async (req, res) => {
             contactNumber,
             streetLine1,
             streetLine2,
-            city
+            city,
+            state
         } = req.body.formData;
 
     // Determine role - default to 'user'. For production, role assignment should be controlled server-side.
@@ -67,6 +69,7 @@ export const signUp = async (req, res) => {
             contactNumber,
             street: streetLine1 + ' ' + streetLine2,
             city,
+            state,
             role
         })
 

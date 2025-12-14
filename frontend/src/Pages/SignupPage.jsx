@@ -84,7 +84,7 @@ const SignupPage = () => {
 
         setLoading(true);
         try {
-            // Backend expects data wrapped in formData object
+            // Backend expects data wrapped in formData object with streetLine1 and streetLine2
             await axios.post(`${API_BASE_URL}/auth/sign-up`, {
                 formData: {
                     firstname: formData.firstname,
@@ -93,9 +93,10 @@ const SignupPage = () => {
                     email: formData.email,
                     contactNumber: formData.contactNumber,
                     password: formData.password,
-                    street: formData.street,
+                    streetLine1: formData.street,
+                    streetLine2: "",
                     city: formData.city,
-                    state: formData.state,
+                    state: formData.state
                 }
             });
             toast.success("Account created successfully!");
