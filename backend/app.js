@@ -16,6 +16,7 @@ import dashboardRoute from "./routes/dashboard.route.js";
 import organizationRoute from "./routes/organization.route.js";
 import productRoute from "./routes/product.route.js";
 import notificationRoute from "./routes/notification.route.js";
+import deliveryRoute from "./routes/delivery.route.js";
 import logger from './utils/logger.js';
 
 const app = express();
@@ -68,6 +69,7 @@ app.use('/api/v1/dashboard', dashboardRoute)
 app.use('/api/v1/organization', organizationRoute)
 app.use('/api/v1/product', productRoute)
 app.use('/api/v1/notifications', notificationRoute)
+app.use('/api/v1/delivery', deliveryRoute)
 
 app.use(errorMiddleware);
 

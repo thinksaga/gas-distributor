@@ -1,23 +1,50 @@
 import mongoose from 'mongoose'
 
-const dilivarySchema = new mongoose.Schema({
-    dilivaryDate: {
+const deliverySchema = new mongoose.Schema({
+    deliveryDate: {
         type: Date,
         required: true,
         default: Date.now,
     },
+    estimatedDeliveryDate: {
+        type: Date,
+        required: false,
+    },
+    actualDeliveryDate: {
+        type: Date,
+        required: false,
+    },
     status: {
         type: String,
         required: true,
-        enum: ['pending', 'approved', 'rejected'],
+        enum: ['pending', 'assigned', 'out_for_delivery', 'delivered', 'cancelled', 'failed'],
         default: 'pending',
     },
-    location: {
-        type: String,
-        required: true,
-        trim: true,
-        minLength: 3,
-        maxLength: 1000
+    deliveryAddress: {
+        street: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        city: {
+            type: String,
+            required: true,
+            trim: true,
+        },
+        state: {
+            type: String,
+            required: false,
+            trim: true,
+        },
+        pincode: {
+            type: String,
+            required: false,
+            trim: true,
+        },
+        coordinates: {
+            latitude: Number,
+            longitude: Number
+        }
     },
     requestId: {
         type: mongoose.Schema.Types.ObjectId,
@@ -29,7 +56,35 @@ const dilivarySchema = new mongoose.Schema({
         ref: 'Outlet',
         required: true
     },
+    deliveryPersonId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Consumer',
+        required: false
+    },
+    trackingNotes: [{
+        status: String,
+        note: String,
+        timestamp: {
+            type: Date,
+            default: Date.now
+        }
+    }],
+    deliveryProof: {
+        signature: String,
+        photo: String,
+        remarks: String
+    },
+    priority: {
+        type: String,
+        enum: ['low', 'normal', 'high', 'urgent'],
+        default: 'normal'
+    }
 }, {timestamps: true});
 
-const Dilivary = mongoose.model('Dilivary', dilivarySchema);
-export default Dilivary;
+// Add indexes for better query performance
+deliverySchema.index({ status: 1, deliveryDate: 1 });
+deliverySchema.index({ requestId: 1 });
+deliverySchema.index({ deliveryPersonId: 1 });
+
+const Delivery = mongoose.model('Delivery', deliverySchema);
+export default Delivery;
