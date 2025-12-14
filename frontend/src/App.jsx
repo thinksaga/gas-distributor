@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-d
 import { Suspense, lazy } from "react";
 import "./App.css";
 import Header from "./Components/Header";
-import Navbar from "./Navbar";
+import PublicLayout from "./components/layouts/PublicLayout";
 import About from "./Components/About";
 import Footer from "./Components/Footer";
 import Feature from "./Components/Feature";
@@ -56,9 +56,6 @@ function App() {
 
   return (
     <Router>
-      {!isLoggedIn && (
-        <Navbar />
-      )}
 
       {showLogin && !isLoggedIn && (
         <Suspense fallback={<LoadingSpinner />}>
@@ -72,19 +69,26 @@ function App() {
       </Suspense>}
 
       <Routes>
-        {/* Redirect based on login state using imperative navigation to avoid Navigate loops */}
-        <Route path="/" element={<HomeRouter Header={Header} />} />
-        
-        {/* Public Pages */}
-        <Route path="/career" element={<><Navbar /><Career /><Footer /></>} />
-        <Route path="/blog" element={<><Navbar /><Blog /><Footer /></>} />
-        <Route path="/about" element={<><Navbar /><About /><Footer /></>} />
-        <Route path="/features" element={<><Navbar /><Feature /><Footer /></>} />
-        <Route path="/support" element={<><Navbar /><Support /><Footer /></>} />
+        {/* Public Layout wrapper */}
+        <Route element={<PublicLayout />}> 
+          {/* Redirect based on login state using imperative navigation to avoid Navigate loops */}
+          <Route path="/" element={<HomeRouter Header={Header} />} />
 
-        {/* Auth Routes */}
-        <Route path="/login" element={!isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><LoginPage /></Suspense> : <Navigate to="/" />} />
-        <Route path="/signup" element={!isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><SignupPage /></Suspense> : <Navigate to="/" />} />
+          {/* Public Pages */}
+          <Route path="/career" element={<Career />} />
+          <Route path="/blog" element={<Blog />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/features" element={<Feature />} />
+          <Route path="/support" element={<Support />} />
+
+          {/* Auth Routes */}
+          <Route path="/login" element={!isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><LoginPage /></Suspense> : <Navigate to="/" />} />
+          <Route path="/signup" element={!isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><SignupPage /></Suspense> : <Navigate to="/" />} />
+
+          {/* User accessible routes */}
+          <Route path="/product-list" element={<Suspense fallback={<LoadingSpinner />}><ProductList /></Suspense>} />
+          <Route path="/checkout/:productId" element={<Suspense fallback={<LoadingSpinner />}><Checkout /></Suspense>} />
+        </Route>
 
         {/* Protected Routes */}
     <Route path="/user-dashboard" element={!isAuthChecked ? <LoadingSpinner /> : (isLoggedIn && userRole === "user" ? <Suspense fallback={<LoadingSpinner />}><UserDash /></Suspense> : <Navigate to="/" />)} />
@@ -107,14 +111,10 @@ function App() {
     
 
         {/* User Routes */}
-        <Route path="/product-list" element={<Suspense fallback={<LoadingSpinner />}><ProductList /></Suspense>} />
-        <Route path="/checkout/:productId" element={<Suspense fallback={<LoadingSpinner />}><Checkout /></Suspense>} />
         <Route path="/UserNotify" element={isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><UserNotify /></Suspense> : <Navigate to="/" />} />
         <Route path="/request-status" element={isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><Requeststatus /></Suspense> : <Navigate to="/" />} />
         <Route path="/Paystatus" element={isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><Paystatus /></Suspense> : <Navigate to="/" />} />
       </Routes>
-
-      {!isLoggedIn && <Footer />}
     </Router>
   );
 }

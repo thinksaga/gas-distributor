@@ -1,0 +1,49 @@
+/* StatCard Molecule Styles */
+.stat-card {
+  position: relative;
+  padding: var(--spacing-4);
+  min-height: 180px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+}
+
+.stat-icon {
+  font-size: 2.5em;
+  margin-bottom: var(--spacing-2);
+  color: var(--color-primary);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--spacing-1);
+}
+
+.stat-value {
+  color: var(--text-primary);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--spacing-2);
+}
+
+.stat-change {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-1);
+  color: var(--text-secondary);
+}
+
+.stat-change-positive {
+  color: var(--color-success);
+}
+
+.stat-change-negative {
+  color: var(--color-error);
+}
+
+.stat-trend {
+  font-weight: var(--font-weight-bold);
+  font-size: 1.2em;
+}

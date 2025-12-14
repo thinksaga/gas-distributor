@@ -1,0 +1,5 @@
+.sidebar { width: 260px; background: var(--bg-primary); border-right: 1px solid var(--border-medium); }
+.menu { list-style: none; padding: var(--spacing-4); }
+.item { margin-bottom: var(--spacing-2); }
+.link { display: block; padding: var(--spacing-2) var(--spacing-3); border-radius: var(--radius-md); color: var(--text-primary); }
+.link:hover { background: var(--bg-secondary); }

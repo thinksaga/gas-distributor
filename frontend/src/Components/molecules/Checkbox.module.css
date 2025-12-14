@@ -1,0 +1,9 @@
+.wrapper { display: inline-flex; align-items: center; gap: var(--spacing-2); cursor: pointer; }
+.input { position: absolute; opacity: 0; pointer-events: none; }
+.box {
+  width: 18px; height: 18px; border: 1px solid var(--border-medium); border-radius: var(--radius-sm);
+  background: var(--bg-primary);
+  display: inline-block;
+}
+.input:checked + .box { background: var(--color-primary); border-color: var(--color-primary); }
+.label { color: var(--text-primary); }

@@ -1,6 +1,6 @@
 import React from "react";
-import Card from "./Card";
-import Button from "./Button";
+import Card from "../components/atoms/Card";
+import Button from "../components/atoms/Button";
 import { FaCheckCircle, FaShieldAlt, FaRocket, FaUsers, FaAward, FaClock, FaStar, FaQuoteLeft } from "react-icons/fa";
 import "./About.css";
 

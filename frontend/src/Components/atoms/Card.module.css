@@ -1,0 +1,42 @@
+/* Card Component Styles */
+.card {
+  background: var(--bg-primary);
+  border-radius: var(--radius-xl);
+  padding: var(--spacing-4);
+  font-family: var(--font-family);
+}
+
+/* Variants */
+.card-elevated {
+  box-shadow: var(--shadow-md);
+}
+
+.card-outlined {
+  border: 2px solid var(--border-medium);
+  box-shadow: none;
+}
+
+.card-filled {
+  background: var(--bg-secondary);
+  box-shadow: none;
+  border: none;
+}
+
+/* Interactive */
+.card-interactive {
+  cursor: pointer;
+  transition: all var(--transition-base);
+}
+
+.card-interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-lg);
+}
+
+.card-interactive.card-outlined:hover {
+  border-color: var(--color-primary);
+}
+
+.card-interactive.card-filled:hover {
+  background: var(--bg-tertiary);
+}

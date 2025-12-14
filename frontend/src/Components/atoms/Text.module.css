@@ -1,0 +1,119 @@
+/* Text Component Styles */
+.text {
+  margin: 0;
+  font-family: var(--font-family);
+  line-height: var(--line-height-normal);
+}
+
+/* Variants */
+.text-h1 {
+  font-size: var(--font-size-6xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-4);
+}
+
+.text-h2 {
+  font-size: var(--font-size-5xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--spacing-3);
+}
+
+.text-h3 {
+  font-size: var(--font-size-4xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+  margin-bottom: var(--spacing-3);
+}
+
+.text-h4 {
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-snug);
+  margin-bottom: var(--spacing-2);
+}
+
+.text-h5 {
+  font-size: var(--font-size-2xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  margin-bottom: var(--spacing-2);
+}
+
+.text-h6 {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  line-height: var(--line-height-snug);
+  margin-bottom: var(--spacing-2);
+}
+
+.text-body {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+.text-caption {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-relaxed);
+}
+
+/* Colors */
+.text-color-primary {
+  color: var(--text-primary);
+}
+
+.text-color-secondary {
+  color: var(--text-secondary);
+}
+
+.text-color-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-color-success {
+  color: var(--color-success);
+}
+
+.text-color-error {
+  color: var(--color-error);
+}
+
+.text-color-warning {
+  color: var(--color-warning);
+}
+
+.text-color-info {
+  color: var(--color-info);
+}
+
+.text-color-white {
+  color: white;
+}
+
+/* Modifiers */
+.text-bold {
+  font-weight: var(--font-weight-bold);
+}
+
+.text-italic {
+  font-style: italic;
+}
+
+.text-align-left {
+  text-align: left;
+}
+
+.text-align-center {
+  text-align: center;
+}
+
+.text-align-right {
+  text-align: right;
+}
+
+.text-align-justify {
+  text-align: justify;
+}

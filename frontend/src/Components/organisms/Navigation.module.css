@@ -1,0 +1,6 @@
+.navbar { background: var(--bg-primary); border-bottom: 1px solid var(--border-medium); }
+.container { max-width: var(--max-width-7xl); margin: 0 auto; padding: var(--spacing-3) var(--spacing-4); display: flex; justify-content: space-between; }
+.link { margin-right: var(--spacing-3); color: var(--text-primary); }
+.link:last-child { margin-right: 0; }
+.link:hover { color: var(--color-primary); }
+.left, .right { display: flex; align-items: center; }
