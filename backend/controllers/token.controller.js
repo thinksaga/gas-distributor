@@ -26,8 +26,13 @@ export const verifyToken = async (req, res) => {
 
 export const requestToken = async (req, res) => {
     try {
-        const {gasType, quantity, outletId } = req.body;
+        const { productId, quantity, outletId } = req.body;
         const consumerId = req.user._id;
+
+        // Validate required fields
+        if (!productId || !quantity || !outletId) {
+            return res.status(400).json({ message: "Missing required fields: productId, quantity, and outletId are required" });
+        }
 
         // Validate outlet exists
         const outlet = await Outlet.findById(outletId);
@@ -35,8 +40,14 @@ export const requestToken = async (req, res) => {
             return res.status(400).json({ message: "Invalid outlet" });
         }
 
+        // Validate quantity
+        if (quantity < 1 || quantity > 10) {
+            return res.status(400).json({ message: "Quantity must be between 1 and 10" });
+        }
+
+        // Create request
         const newRequest = await RequestModel.create({
-            gasType,
+            productId,
             quantity,
             requestDate: new Date(),
             status: "pending",
@@ -45,30 +56,47 @@ export const requestToken = async (req, res) => {
             outletId
         });
 
+        // Generate unique token
         const tokenString = generatePassword.generate({
-            length: 6,
+            length: 8,
             numbers: true,
             symbols: false,
-            uppercase: false,
+            uppercase: true,
             excludeSimilarCharacters: true
         });
 
+        // Create token
         const newToken = await Token.create({
             token: tokenString,
             requestId: newRequest._id,
+            consumerId,
             requestDate: new Date(),
-            status: "pending",
-            expireDate: new Date(Date.now() + 86400000), // 1 day
-            pickUpDate: new Date(Date.now() + 86400000),
+            status: "active",
+            expireDate: new Date(Date.now() + 86400000), // 1 day (24 hours)
+            pickUpDate: null,
         });
 
         // Update request with tokenId
         newRequest.tokenId = newToken._id;
         await newRequest.save();
 
-        return res.status(201).json({success: true, message: "New token created", data: {token: newToken, request: newRequest}})
+        // Populate request details for response
+        const populatedRequest = await RequestModel.findById(newRequest._id)
+            .populate('productId', 'name price weight')
+            .populate('outletId', 'name location city')
+            .populate('tokenId');
+
+        return res.status(201).json({
+            success: true,
+            message: "Gas request submitted successfully! Token generated.",
+            data: {
+                token: newToken,
+                request: populatedRequest
+            }
+        });
     }
     catch (error) {
-        res.status(500).json({message: error.message})
+        console.error("Token request error:", error);
+        res.status(500).json({ message: error.message });
     }
 }

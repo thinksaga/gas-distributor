@@ -3,14 +3,19 @@ import mongoose from "mongoose";
 const requestSchema = new mongoose.Schema({
     gasType: {
         type: String,
-        required: true,
-        enum: ['LPG', 'CNG', 'Propane'],
+        required: false, // Made optional since we now use productId
+        enum: ['LPG', 'CNG', 'Propane', 'PNG', 'Commercial_LPG'],
+    },
+    productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: false // Optional for backward compatibility
     },
     quantity: {
         type: Number,
         required: true,
         min: [1, "Quantity must be a positive number"],
-        max: [1000, "Quantity must be less than 1000"]
+        max: [10, "Quantity must be less than or equal to 10"]
     },
     requestDate: {
         type: Date,
@@ -20,6 +25,11 @@ const requestSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
+        enum: ['pending', 'approved', 'rejected', 'delivered', 'cancelled'],
+        default: 'pending',
+    },
+    approval: {
+        type: String,
         enum: ['pending', 'approved', 'rejected'],
         default: 'pending',
     },
@@ -41,9 +51,12 @@ const requestSchema = new mongoose.Schema({
     adminId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Consumer',
-        required: false // Optional for now as requests might be created before assignment or linked via outlet
+        required: false
     },
-
+    requestCode: {
+        type: String,
+        required: false
+    }
 }, { timestamps: true });
 
 const Request = mongoose.model('Request', requestSchema);

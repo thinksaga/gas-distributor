@@ -14,13 +14,17 @@ export const getUserRequests = async (req, res) => {
     try {
         const consumerId = req.user._id;
         const requests = await RequestModel.find({ consumerId })
-            .populate('outletId', 'name location city')
+            .populate('productId', 'name price weight type description')
+            .populate('outletId', 'name location city state')
             .populate({
                 path: 'tokenId',
-                select: 'token status'
-            });
+                select: 'token status expireDate'
+            })
+            .sort({ createdAt: -1 }); // Most recent first
+            
         res.status(200).json({ success: true, data: requests });
     } catch (error) {
+        console.error("Get user requests error:", error);
         res.status(500).json({ message: error.message });
     }
 };

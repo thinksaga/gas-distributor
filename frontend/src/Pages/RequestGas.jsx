@@ -2,24 +2,29 @@ import React, { useState, useEffect } from "react";
 import Card from "../Components/Card";
 import Button from "../Components/Button";
 import Input from "../Components/Input";
-import { FaGasPump, FaMapMarkerAlt } from "react-icons/fa";
+import { FaGasPump, FaMapMarkerAlt, FaInfoCircle } from "react-icons/fa";
 import { fetchOutlets } from "../services/outletService";
+import { fetchProducts } from "../services/productService";
 import { requestGas } from "../services/userService";
 import { toast } from "react-toastify";
 import "./RequestGas.css";
 
 const RequestGas = () => {
   const [formData, setFormData] = useState({
-    gasType: "",
+    productId: "",
     quantity: 1,
     outletId: ""
   });
   const [outlets, setOutlets] = useState([]);
+  const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [loadingOutlets, setLoadingOutlets] = useState(true);
+  const [loadingProducts, setLoadingProducts] = useState(true);
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   useEffect(() => {
     loadOutlets();
+    loadProducts();
   }, []);
 
   const loadOutlets = async () => {
@@ -34,18 +39,36 @@ const RequestGas = () => {
     }
   };
 
+  const loadProducts = async () => {
+    try {
+      const data = await fetchProducts();
+      setProducts(data);
+    } catch (error) {
+      console.error("Failed to load products", error);
+      toast.error("Failed to load products");
+    } finally {
+      setLoadingProducts(false);
+    }
+  };
+
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
       [name]: value
     }));
+
+    // Update selected product details
+    if (name === "productId") {
+      const product = products.find(p => p._id === value);
+      setSelectedProduct(product);
+    }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!formData.gasType || !formData.outletId) {
+    if (!formData.productId || !formData.outletId) {
       toast.error("Please fill in all required fields");
       return;
     }
@@ -58,27 +81,29 @@ const RequestGas = () => {
     setLoading(true);
     try {
       const result = await requestGas(formData);
-      toast.success("Gas request submitted successfully! Your token: " + result.data.token.token);
+      toast.success(`Gas request submitted successfully! Your token: ${result.data.token.token}`);
+      
       // Reset form
       setFormData({
-        gasType: "",
+        productId: "",
         quantity: 1,
         outletId: ""
       });
+      setSelectedProduct(null);
     } catch (error) {
       console.error("Request failed", error);
-      toast.error("Failed to submit request. Please try again.");
+      toast.error(error.response?.data?.message || "Failed to submit request. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-  const gasTypes = [
-    { value: "LPG", label: "LPG (Liquefied Petroleum Gas) - Domestic" },
-    { value: "Commercial_LPG", label: "LPG (Liquefied Petroleum Gas) - Commercial" },
-    { value: "PNG", label: "PNG (Piped Natural Gas)" },
-    { value: "CNG", label: "CNG (Compressed Natural Gas)" }
-  ];
+  const calculateTotal = () => {
+    if (selectedProduct && formData.quantity) {
+      return selectedProduct.price * formData.quantity;
+    }
+    return 0;
+  };
 
   return (
     <div className="request-gas-page">
@@ -94,38 +119,64 @@ const RequestGas = () => {
               <div className="section-icon">
                 <FaGasPump />
               </div>
-              <h3 className="section-title">Gas Details</h3>
+              <h3 className="section-title">Gas Product</h3>
 
               <div className="form-group">
-                <Input
-                  type="select"
-                  label="Gas Type"
-                  name="gasType"
-                  value={formData.gasType}
-                  onChange={handleInputChange}
-                  required
-                >
-                  <option value="">Select gas type</option>
-                  {gasTypes.map(type => (
-                    <option key={type.value} value={type.value}>
-                      {type.label}
-                    </option>
-                  ))}
-                </Input>
+                <label className="form-label">Select Gas Cylinder *</label>
+                {loadingProducts ? (
+                  <div className="loading-inline">
+                    <div className="spinner-sm"></div>
+                    <span>Loading products...</span>
+                  </div>
+                ) : (
+                  <select
+                    name="productId"
+                    value={formData.productId}
+                    onChange={handleInputChange}
+                    className="form-select"
+                    required
+                  >
+                    <option value="">Choose gas cylinder type</option>
+                    {products.map(product => (
+                      <option key={product._id} value={product._id}>
+                        {product.name} - ₹{product.price} ({product.weight || product.type})
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
+              {selectedProduct && (
+                <div className="product-details">
+                  <FaInfoCircle />
+                  <div className="product-info">
+                    <p><strong>{selectedProduct.name}</strong></p>
+                    <p>{selectedProduct.description}</p>
+                    <p className="price-info">Price: ₹{selectedProduct.price} per cylinder</p>
+                  </div>
+                </div>
+              )}
+
               <div className="form-group">
-                <Input
+                <label className="form-label">Quantity *</label>
+                <input
                   type="number"
-                  label="Quantity"
                   name="quantity"
                   value={formData.quantity}
                   onChange={handleInputChange}
                   min="1"
                   max="10"
+                  className="form-input"
                   required
                 />
+                <small className="form-hint">Maximum 10 cylinders per request</small>
               </div>
+
+              {selectedProduct && formData.quantity > 0 && (
+                <div className="total-amount">
+                  <strong>Total Amount: ₹{calculateTotal()}</strong>
+                </div>
+              )}
             </div>
 
             <div className="form-section">
@@ -141,21 +192,21 @@ const RequestGas = () => {
                 </div>
               ) : (
                 <div className="form-group">
-                  <Input
-                    type="select"
-                    label="Select Outlet"
+                  <label className="form-label">Select Outlet *</label>
+                  <select
                     name="outletId"
                     value={formData.outletId}
                     onChange={handleInputChange}
+                    className="form-select"
                     required
                   >
                     <option value="">Choose your delivery outlet</option>
                     {outlets.map(outlet => (
                       <option key={outlet._id} value={outlet._id}>
-                        {outlet.name} - {outlet.city}
+                        {outlet.name} - {outlet.location || outlet.city}
                       </option>
                     ))}
-                  </Input>
+                  </select>
                 </div>
               )}
             </div>
@@ -166,7 +217,7 @@ const RequestGas = () => {
                 variant="primary"
                 size="lg"
                 fullWidth
-                disabled={loading || loadingOutlets}
+                disabled={loading || loadingOutlets || loadingProducts}
               >
                 {loading ? "Submitting Request..." : "Submit Gas Request"}
               </Button>
@@ -175,13 +226,19 @@ const RequestGas = () => {
         </Card>
 
         <Card className="info-card" padding="lg">
-          <h4 className="info-title">How it works:</h4>
+          <h4 className="info-title">📋 How it works:</h4>
           <ol className="info-steps">
-            <li>Fill in your gas requirements and select a delivery outlet</li>
+            <li>Select your preferred gas cylinder type and quantity</li>
+            <li>Choose your nearest delivery outlet</li>
             <li>Submit your request to receive a unique token</li>
             <li>Present the token at the outlet for gas collection</li>
-            <li>Track your request status in the "My Requests" section</li>
+            <li>Track your request status in the "Request Status" section</li>
           </ol>
+
+          <div className="info-note">
+            <FaInfoCircle />
+            <p><strong>Note:</strong> Tokens are valid for 24 hours from the time of generation. Please collect your gas cylinder within this period.</p>
+          </div>
         </Card>
       </div>
     </div>
