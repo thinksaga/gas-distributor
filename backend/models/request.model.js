@@ -5,6 +5,7 @@ const requestSchema = new mongoose.Schema({
         type: String,
         required: false, // Made optional since we now use productId
         enum: ['LPG', 'CNG', 'Propane', 'PNG', 'Commercial_LPG'],
+        default: 'LPG' // Default value to prevent validation errors
     },
     productId: {
         type: mongoose.Schema.Types.ObjectId,

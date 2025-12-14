@@ -18,7 +18,7 @@ const tokenSchema = new mongoose.Schema({
     status: {
         type: String,
         required: true,
-        enum: ['pending', 'approved', 'rejected'],
+        enum: ['pending', 'approved', 'rejected', 'active', 'expired', 'used'],
         default: 'pending',
     },
     expireDate: {
@@ -28,8 +28,8 @@ const tokenSchema = new mongoose.Schema({
     },
     pickUpDate: {
         type: Date,
-        required: true,
-        default: Date.now,
+        required: false,
+        default: null,
     },
 }, {timestamps: true});
 
