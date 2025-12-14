@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./OutletDeliveries.css";
 
 const OutletDeliveries = () => {
   const [incomingDeliveries, setIncomingDeliveries] = useState([
@@ -17,26 +18,32 @@ const OutletDeliveries = () => {
   ]);
 
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold mb-4">Outlet Deliveries Dashboard</h2>
+    <div className="outlet-deliveries-page">
+      <div className="page-header">
+        <h2 className="page-title">Outlet Deliveries Dashboard</h2>
+      </div>
       
       {/* Incoming Deliveries Section */}
-      <div className="mb-6 bg-white shadow p-4 rounded">
-        <h3 className="text-lg font-semibold mb-2">Incoming Deliveries</h3>
-        <table className="w-full border-collapse border border-gray-300">
+      <div className="deliveries-section">
+        <h3 className="section-title">Incoming Deliveries</h3>
+        <table className="deliveries-table">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Stock Type</th>
-              <th className="border p-2">Estimated Arrival</th>
-              <th className="border p-2">Status</th>
+            <tr>
+              <th>Stock Type</th>
+              <th>Estimated Arrival</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {incomingDeliveries.map(delivery => (
-              <tr key={delivery.id} className="border">
-                <td className="border p-2">{delivery.stockType}</td>
-                <td className="border p-2">{delivery.arrivalTime}</td>
-                <td className={`border p-2 ${delivery.status === "Delayed" ? "text-red-500" : "text-green-500"}`}>{delivery.status}</td>
+              <tr key={delivery.id}>
+                <td>{delivery.stockType}</td>
+                <td>{delivery.arrivalTime}</td>
+                <td>
+                  <span className={`status-badge ${delivery.status === "Delayed" ? "status-delayed" : "status-ontheway"}`}>
+                    {delivery.status}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -44,22 +51,26 @@ const OutletDeliveries = () => {
       </div>
 
       {/* Order Pickup Tracking */}
-      <div className="mb-6 bg-white shadow p-4 rounded">
-        <h3 className="text-lg font-semibold mb-2">Order Pickup Tracking</h3>
-        <table className="w-full border-collapse border border-gray-300">
+      <div className="deliveries-section">
+        <h3 className="section-title">Order Pickup Tracking</h3>
+        <table className="deliveries-table">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Customer</th>
-              <th className="border p-2">Pickup Time</th>
-              <th className="border p-2">Status</th>
+            <tr>
+              <th>Customer</th>
+              <th>Pickup Time</th>
+              <th>Status</th>
             </tr>
           </thead>
           <tbody>
             {pickupOrders.map(order => (
-              <tr key={order.id} className="border">
-                <td className="border p-2">{order.customer}</td>
-                <td className="border p-2">{order.pickupTime}</td>
-                <td className={`border p-2 ${order.status === "Picked Up" ? "text-green-500" : "text-orange-500"}`}>{order.status}</td>
+              <tr key={order.id}>
+                <td>{order.customer}</td>
+                <td>{order.pickupTime}</td>
+                <td>
+                  <span className={`status-badge ${order.status === "Picked Up" ? "status-pickedup" : "status-pending"}`}>
+                    {order.status}
+                  </span>
+                </td>
               </tr>
             ))}
           </tbody>
@@ -67,22 +78,22 @@ const OutletDeliveries = () => {
       </div>
       
       {/* Delivery Route Optimization */}
-      <div className="mb-6 bg-white shadow p-4 rounded">
-        <h3 className="text-lg font-semibold mb-2">Delivery Route Optimization</h3>
-        <table className="w-full border-collapse border border-gray-300">
+      <div className="deliveries-section">
+        <h3 className="section-title">Delivery Route Optimization</h3>
+        <table className="deliveries-table">
           <thead>
-            <tr className="bg-gray-200">
-              <th className="border p-2">Customer</th>
-              <th className="border p-2">Address</th>
-              <th className="border p-2">Estimated Arrival</th>
+            <tr>
+              <th>Customer</th>
+              <th>Address</th>
+              <th>Estimated Arrival</th>
             </tr>
           </thead>
           <tbody>
             {deliveryRoutes.map(route => (
-              <tr key={route.id} className="border">
-                <td className="border p-2">{route.customer}</td>
-                <td className="border p-2">{route.address}</td>
-                <td className="border p-2 text-blue-500">{route.eta}</td>
+              <tr key={route.id}>
+                <td>{route.customer}</td>
+                <td>{route.address}</td>
+                <td className="eta-text">{route.eta}</td>
               </tr>
             ))}
           </tbody>

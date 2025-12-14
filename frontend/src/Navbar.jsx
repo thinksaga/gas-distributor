@@ -5,7 +5,7 @@ import Button from "./Components/Button";
 import "./Navbar.css";
 import "./Components/NavbarModern.css";
 
-const Navbar = ({ homebtn, abtBtn, febtn, supbtn }) => {
+const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const toggleMenu = () => {
@@ -15,7 +15,7 @@ const Navbar = ({ homebtn, abtBtn, febtn, supbtn }) => {
   return (
     <nav className="navbar">
       <div className="navbar-container">
-        <Link to="/" className="navbar-logo" onClick={homebtn}>
+        <Link to="/" className="navbar-logo">
           <span className="logo-text">VayuGas</span>
         </Link>
 
@@ -29,24 +29,24 @@ const Navbar = ({ homebtn, abtBtn, febtn, supbtn }) => {
 
         <ul className={`navbar-menu ${isMenuOpen ? 'active' : ''}`}>
           <li className="navbar-item">
-            <button onClick={() => { homebtn(); setIsMenuOpen(false); }} className="navbar-link">
+            <Link to="/" className="navbar-link" onClick={() => setIsMenuOpen(false)}>
               Home
-            </button>
+            </Link>
           </li>
           <li className="navbar-item">
-            <button onClick={() => { abtBtn(); setIsMenuOpen(false); }} className="navbar-link">
+            <Link to="/about" className="navbar-link" onClick={() => setIsMenuOpen(false)}>
               About
-            </button>
+            </Link>
           </li>
           <li className="navbar-item">
-            <button onClick={() => { febtn(); setIsMenuOpen(false); }} className="navbar-link">
+            <Link to="/features" className="navbar-link" onClick={() => setIsMenuOpen(false)}>
               Features
-            </button>
+            </Link>
           </li>
           <li className="navbar-item">
-            <button onClick={() => { supbtn(); setIsMenuOpen(false); }} className="navbar-link">
+            <Link to="/support" className="navbar-link" onClick={() => setIsMenuOpen(false)}>
               Support
-            </button>
+            </Link>
           </li>
         </ul>
 

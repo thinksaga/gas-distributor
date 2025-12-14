@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { FaPlus, FaEdit } from "react-icons/fa";
 import { getOutletStock, updateStock } from "../../services/outletService";
 import { toast } from "react-toastify";
+import "./OutletStock.css";
 
 const OutletStock = () => {
   const [products, setProducts] = useState([]);
@@ -121,260 +122,276 @@ const OutletStock = () => {
   };
 
   return (
-    <div className="p-6 bg-gray-100 min-h-screen">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">Stock Management</h2>
+    <div className="outlet-stock-page">
+      <div className="page-header">
+        <h2 className="page-title">Stock Management</h2>
         <button
           onClick={() => setShowAddModal(true)}
-          className="bg-blue-600 text-white px-4 py-2 rounded flex items-center"
+          className="add-btn"
         >
-          <FaPlus className="mr-2" /> Add Product
+          <FaPlus /> Add Product
         </button>
       </div>
 
-      <table className="w-full border border-gray-300">
-        <thead className="bg-gray-200">
-          <tr>
-            <th className="p-2 border">Product ID</th>
-            <th className="p-2 border">Product Name</th>
-            <th className="p-2 border">Product Type</th>
-            <th className="p-2 border">Price Per Unit (LKR)</th>
-            <th className="p-2 border">Image</th>
-            <th className="p-2 border">Available Quantity</th>
-            <th className="p-2 border">Stock Status</th>
-            <th className="p-2 border">Actions</th>
-            <th className="p-2 border">Request Stock</th>
-          </tr>
-        </thead>
-        <tbody>
-          {products.map((product) => (
-            <tr key={product.productID} className="text-center">
-              <td className="p-2 border">{product.productID}</td>
-              <td className="p-2 border">{product.productName}</td>
-              <td className="p-2 border">{product.productType}</td>
-              <td className="p-2 border">{product.pricePerUnit}</td>
-              <td className="p-2 border">
-                <img
-                  src={product.image}
-                  alt={product.productName}
-                  className="w-16 h-16 mx-auto"
-                />
-              </td>
-              <td className="p-2 border">{product.availableQuantity}</td>
-              <td className="p-2 border">{product.stockStatus}</td>
-              <td className="p-2 border">
-                <button
-                  onClick={() => {
-                    setSelectedProduct({ ...product });
-                    setShowEditModal(true);
-                  }}
-                  className="bg-yellow-500 text-white px-3 py-1 rounded flex items-center mx-auto"
-                >
-                  <FaEdit className="mr-1" /> Edit
+      <div className="stock-grid">
+        {products.map((product) => (
+          <div key={product.productID} className="stock-card">
+            <div className="stock-image-container">
+              <img src={product.image} alt={product.productName} className="stock-image" />
+            </div>
+            <div className="stock-details">
+              <h3 className="stock-name">{product.productName}</h3>
+              <p className="stock-type">{product.productType}</p>
+              <div className="stock-info-row">
+                <span>Price:</span>
+                <span>LKR {product.pricePerUnit}</span>
+              </div>
+              <div className="stock-info-row">
+                <span>Quantity:</span>
+                <span>{product.availableQuantity}</span>
+              </div>
+              <div className="stock-info-row">
+                <span>Status:</span>
+                <span className={`stock-status ${product.availableQuantity < LOW_STOCK_THRESHOLD ? 'status-low' : 'status-instock'}`}>
+                  {product.stockStatus}
+                </span>
+              </div>
+              <div className="card-actions">
+                <button onClick={() => {
+                  setSelectedProduct({ ...product });
+                  setShowEditModal(true);
+                }} className="action-btn edit-btn">
+                  <FaEdit /> Edit
                 </button>
-              </td>
-              <td className="p-2 border">
-                {/* Show request button if the product is low stock */}
                 {product.availableQuantity < LOW_STOCK_THRESHOLD && (
-                  <button
-                    onClick={() => handleRequestStock(product.productID)}
-                    className="bg-red-500 text-white px-4 py-1 rounded"
-                  >
-                    Request Stock
+                  <button onClick={() => handleRequestStock(product.productID)} className="action-btn request-btn">
+                    <FaPlus /> Request
                   </button>
                 )}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
 
       {/* Add Product Modal */}
       {showAddModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h3 className="text-lg font-bold mb-4">Add New Product</h3>
-            <input
-              type="text"
-              placeholder="Product ID"
-              value={newProduct.productID}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, productID: e.target.value })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="text"
-              placeholder="Product Name"
-              value={newProduct.productName}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, productName: e.target.value })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="text"
-              placeholder="Product Type"
-              value={newProduct.productType}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, productType: e.target.value })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="number"
-              placeholder="Price Per Unit"
-              value={newProduct.pricePerUnit}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, pricePerUnit: e.target.value })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="text"
-              placeholder="Image URL"
-              value={newProduct.image}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, image: e.target.value })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="number"
-              placeholder="Available Quantity"
-              value={newProduct.availableQuantity}
-              onChange={(e) =>
-                setNewProduct({
-                  ...newProduct,
-                  availableQuantity: e.target.value,
-                })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="text"
-              placeholder="Stock Status"
-              value={newProduct.stockStatus}
-              onChange={(e) =>
-                setNewProduct({ ...newProduct, stockStatus: e.target.value })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <button
-              onClick={handleAddProduct}
-              className="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Save
-            </button>
-            <button
-              onClick={() => setShowAddModal(false)}
-              className="ml-2 px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Cancel
-            </button>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="modal-title">Add New Product</h3>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Product ID"
+                value={newProduct.productID}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, productID: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Product Name"
+                value={newProduct.productName}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, productName: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Product Type"
+                value={newProduct.productType}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, productType: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="number"
+                placeholder="Price Per Unit"
+                value={newProduct.pricePerUnit}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, pricePerUnit: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Image URL"
+                value={newProduct.image}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, image: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="number"
+                placeholder="Available Quantity"
+                value={newProduct.availableQuantity}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    availableQuantity: e.target.value,
+                  })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                placeholder="Stock Status"
+                value={newProduct.stockStatus}
+                onChange={(e) =>
+                  setNewProduct({ ...newProduct, stockStatus: e.target.value })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="modal-actions">
+              <button
+                onClick={handleAddProduct}
+                className="modal-btn save-btn"
+              >
+                Save
+              </button>
+              <button
+                onClick={() => setShowAddModal(false)}
+                className="modal-btn cancel-btn"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* Edit Product Modal */}
       {showEditModal && selectedProduct && (
-        <div className="fixed inset-0 flex items-center justify-center bg-gray-900 bg-opacity-50">
-          <div className="bg-white p-6 rounded shadow-lg w-96">
-            <h3 className="text-lg font-bold mb-4">Edit Product</h3>
-            <input
-              type="text"
-              value={selectedProduct.productID}
-              className="border p-2 w-full mb-2 bg-gray-200" // Make ID non-editable
-              disabled
-            />
-            <input
-              type="text"
-              value={selectedProduct.productName}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  productName: e.target.value,
-                })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="text"
-              value={selectedProduct.productType}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  productType: e.target.value,
-                })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="number"
-              value={selectedProduct.pricePerUnit}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  pricePerUnit: e.target.value,
-                })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="text"
-              value={selectedProduct.image}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  image: e.target.value,
-                })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="number"
-              value={selectedProduct.availableQuantity}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  availableQuantity: e.target.value,
-                })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <input
-              type="text"
-              value={selectedProduct.stockStatus}
-              onChange={(e) =>
-                setSelectedProduct({
-                  ...selectedProduct,
-                  stockStatus: e.target.value,
-                })
-              }
-              className="border p-2 w-full mb-2"
-            />
-            <button
-              onClick={handleEditProduct}
-              className="px-4 py-2 bg-yellow-500 text-white rounded"
-            >
-              Update
-            </button>
-            <button
-              onClick={() => setShowEditModal(false)}
-              className="ml-2 px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Cancel
-            </button>
+        <div className="modal-overlay">
+          <div className="modal-content">
+            <h3 className="modal-title">Edit Product</h3>
+            <div className="form-group">
+              <input
+                type="text"
+                value={selectedProduct.productID}
+                className="form-input disabled"
+                disabled
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                value={selectedProduct.productName}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    productName: e.target.value,
+                  })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                value={selectedProduct.productType}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    productType: e.target.value,
+                  })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="number"
+                value={selectedProduct.pricePerUnit}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    pricePerUnit: e.target.value,
+                  })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                value={selectedProduct.image}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    image: e.target.value,
+                  })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="number"
+                value={selectedProduct.availableQuantity}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    availableQuantity: e.target.value,
+                  })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="form-group">
+              <input
+                type="text"
+                value={selectedProduct.stockStatus}
+                onChange={(e) =>
+                  setSelectedProduct({
+                    ...selectedProduct,
+                    stockStatus: e.target.value,
+                  })
+                }
+                className="form-input"
+              />
+            </div>
+            <div className="modal-actions">
+              <button
+                onClick={handleEditProduct}
+                className="modal-btn save-btn"
+              >
+                Update
+              </button>
+              <button
+                onClick={() => setShowEditModal(false)}
+                className="modal-btn cancel-btn"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
         </div>
       )}
 
       {/* List of Stock Requests */}
-      <div className="mt-6">
-        <h3 className="text-xl font-semibold">Stock Requests</h3>
-        <ul className="mt-2">
+      <div className="stock-requests-section">
+        <h3 className="section-title">Stock Requests</h3>
+        <ul className="requests-list">
           {requests.map((request, index) => (
-            <li key={index} className="p-2 border mb-2">
+            <li key={index} className="request-item">
               Requested {request.quantityRequested} units of {request.productName}
             </li>
           ))}

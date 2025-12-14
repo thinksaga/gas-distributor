@@ -211,7 +211,7 @@
     font-size: var(--font-size-base);
     font-family: var(--font-family);
     color: var(--text-primary);
-    background: var(--bg-primary);
+    background: #f9fafb;
     border: 2px solid var(--border-medium);
     border-radius: var(--radius-lg);
     transition: all var(--transition-base);
@@ -260,8 +260,17 @@
     pointer-events: none;
 }
 
+.input-icon-right {
+    right: var(--spacing-3);
+    left: auto;
+}
+
 .input-modern.with-icon {
     padding-left: var(--spacing-10);
+}
+
+.input-modern.with-icon-right {
+    padding-right: var(--spacing-10);
 }
 
 /* ===== MODALS ===== */

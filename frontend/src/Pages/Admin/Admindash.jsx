@@ -8,6 +8,7 @@ import Adminstock from "./Adminstock"; // Import Admin Stock Page
 import Adminreport from "./Adminreport"; // Import Admin Report Page
 import AdminOutlet from "./AdminOutlet"; // Import Admin Outlet Page
 import AdminDelivery from "./AdminDelivery"; // Import Admin Delivery Page
+import "./Admindash.css";
 
 import {
     Chart as ChartJS,
@@ -84,116 +85,115 @@ const Admindash = () => {
     }
 
     return (
-        <div className="flex h-screen">
+        <div className="admin-dashboard">
             {/* Sidebar Navigation */}
-            <aside className="w-64 bg-blue-900 text-white flex flex-col p-4">
-                <h2 className="text-xl font-bold mb-6">VayuGas</h2>
-                <nav className="flex-1">
-                    <ul>
+            <aside className="admin-sidebar">
+                <h2 className="sidebar-title">VayuGas</h2>
+                <nav className="sidebar-nav">
+                    <ul className="nav-list">
                         <li
-                            className={`mb-4 flex items-center space-x-2 cursor-pointer ${activePage === "dashboard" ? "font-bold" : ""}`}
+                            className={`nav-item ${activePage === "dashboard" ? "active" : ""}`}
                             onClick={() => setActivePage("dashboard")}
                         >
-                            <FaHome /><span>Home</span>
+                            <FaHome className="nav-icon" /><span>Home</span>
                         </li>
 
                         <li
-                            className={`mb-4 flex items-center space-x-2 cursor-pointer ${activePage === "stock" ? "font-bold" : ""}`}
+                            className={`nav-item ${activePage === "stock" ? "active" : ""}`}
                             onClick={() => setActivePage("stock")}
                         >
-                            <FaBox /><span>Stock</span>
+                            <FaBox className="nav-icon" /><span>Stock</span>
                         </li>
 
                         <li
-                            className={`mb-4 flex items-center space-x-2 cursor-pointer ${activePage === "report" ? "font-bold" : ""}`}
+                            className={`nav-item ${activePage === "report" ? "active" : ""}`}
                             onClick={() => setActivePage("report")}
                         >
-                            <FaChartBar /><span>Reports</span>
+                            <FaChartBar className="nav-icon" /><span>Reports</span>
                         </li>
 
                         <li
-                            className={`mb-4 flex items-center space-x-2 cursor-pointer ${activePage === "outlet" ? "font-bold" : ""}`}
+                            className={`nav-item ${activePage === "outlet" ? "active" : ""}`}
                             onClick={() => setActivePage("outlet")}
                         >
-                            <FaStore /><span>Outlet</span>
+                            <FaStore className="nav-icon" /><span>Outlet</span>
                         </li>
 
                         <li
-                            className={`mb-4 flex items-center space-x-2 cursor-pointer ${activePage === "deliveries" ? "font-bold" : ""}`}
+                            className={`nav-item ${activePage === "deliveries" ? "active" : ""}`}
                             onClick={() => setActivePage("deliveries")}
                         >
-                            <FaTruck /><span>Deliveries</span>
+                            <FaTruck className="nav-icon" /><span>Deliveries</span>
                         </li>
                     </ul>
                 </nav>
-                <div className="mt-auto">
-                    <ul>
-                        <li className="mb-4 flex items-center space-x-2 text-red-500 cursor-pointer" onClick={handleLogout}>
-                            <FaSignOutAlt /><span>Log Out</span>
-                        </li>
-                    </ul>
+                <div className="sidebar-footer">
+                    <div className="logout-btn" onClick={handleLogout}>
+                        <FaSignOutAlt className="nav-icon" /><span>Log Out</span>
+                    </div>
                 </div>
             </aside>
 
             {/* Main Content */}
-            <main className="flex-1 p-6 bg-gray-100">
+            <main className="admin-main">
                 <ToastContainer />
-                <div className="flex justify-between items-center bg-white p-3 rounded-md shadow-md mb-6">
-                    <div className="flex items-center space-x-2">
-                        <FaSearch />
-                        <input type="text" placeholder="Search stock, reports, customers" className="outline-none" />
+                <div className="admin-header">
+                    <div className="search-bar">
+                        <FaSearch className="text-gray-400" />
+                        <input type="text" placeholder="Search stock, reports, customers" className="search-input" />
                     </div>
-                    <div className="w-10 h-10 rounded-full bg-gray-300"></div>
+                    <div className="admin-profile"></div>
                 </div>
 
                 {/* Render pages based on active selection */}
+                <div className="admin-content">
                 {activePage === "dashboard" && (
-                    <>
-                        <h2 className="text-xl font-bold">Welcome to Main Stock Dashboard</h2>
-                        <p>Manage stock, reports, outlets, and deliveries here.</p>
+                    <div className="dashboard-content">
+                        <h1 className="dashboard-title">Welcome to Main Stock Dashboard</h1>
+                        <p className="dashboard-subtitle">Manage stock, reports, outlets, and deliveries here.</p>
 
                         {/* Summary Cards */}
-                        <div className="grid grid-cols-3 gap-4 mb-6">
-                            <div className="bg-white p-4 rounded-md shadow-md">
-                                <h3 className="text-lg font-bold">Total Orders</h3>
-                                <p className="text-2xl">{stats.totalOrders}</p>
+                        <div className="stats-grid">
+                            <div className="stat-card">
+                                <h3 className="stat-title">Total Orders</h3>
+                                <p className="stat-value">{stats.totalOrders}</p>
                             </div>
-                            <div className="bg-white p-4 rounded-md shadow-md">
-                                <h3 className="text-lg font-bold">Total Delivered</h3>
-                                <p className="text-2xl">{stats.totalDelivered}</p>
+                            <div className="stat-card">
+                                <h3 className="stat-title">Total Delivered</h3>
+                                <p className="stat-value">{stats.totalDelivered}</p>
                             </div>
-                            <div className="bg-white p-4 rounded-md shadow-md">
-                                <h3 className="text-lg font-bold">Cost</h3>
-                                <p className="text-2xl">LKR {stats.totalCost}</p>
+                            <div className="stat-card">
+                                <h3 className="stat-title">Cost</h3>
+                                <p className="stat-value">LKR {stats.totalCost}</p>
                             </div>
                         </div>
 
                         {/* Charts */}
-                        <div className="grid grid-cols-2 gap-4 mb-6">
-                            <div className="bg-white p-4 rounded-md shadow-md">
-                                <h3 className="text-lg font-bold">Sales & Purchase</h3>
+                        <div className="charts-grid">
+                            <div className="chart-card">
+                                <h3 className="chart-title">Sales & Purchase</h3>
                                 {stats.salesData.labels.length > 0 && <Bar data={stats.salesData} />}
                             </div>
-                            <div className="bg-white p-4 rounded-md shadow-md">
-                                <h3 className="text-lg font-bold">Order Summary</h3>
+                            <div className="chart-card">
+                                <h3 className="chart-title">Order Summary</h3>
                                 {stats.orderSummaryData.labels.length > 0 && <Line data={stats.orderSummaryData} />}
                             </div>
                         </div>
 
                         {/*verify token*/}
-                        <div className="grid gap-4 mb-6">
-                            <div className="bg-white p-4 rounded-md shadow-md">
-                                <h3 className="text-lg font-bold">Verify Token (eg: x26j97)</h3>
+                        <div className="verify-section">
+                            <h3 className="chart-title">Verify Token (eg: x26j97)</h3>
+                            <div className="verify-input-group">
                                 <input type="text" placeholder="Enter Token"
-                                    className="outline-none px-5 py-2 border-2 mx-10" onChange={(e) => {
+                                    className="verify-input" onChange={(e) => {
                                         setVerifyToken(e.target.value)
                                     }} />
-                                <button className="bg-blue-500 text-white px-4 py-2 rounded-md mt-2"
-                                    onClick={handleVerify}>Verify
+                                <button className="verify-btn"
+                                    onClick={() => {}}>Verify
                                 </button>
                             </div>
                         </div>
-                    </>
+                    </div>
                 )}
 
                 {activePage === "stock" && <Adminstock />}

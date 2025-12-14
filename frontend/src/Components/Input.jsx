@@ -23,6 +23,7 @@ const Input = ({
         error ? 'input-modern-error' : '',
         success ? 'input-modern-success' : '',
         icon ? 'with-icon' : '',
+        icon && iconPosition === 'right' ? 'with-icon-right' : '',
         disabled ? 'input-disabled' : '',
         className
     ].filter(Boolean).join(' ');

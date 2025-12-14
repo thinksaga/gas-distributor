@@ -6,6 +6,7 @@ import { useContext } from 'react';
 import { fetchSuperAdminStats } from "../../services/dashboardService";
 import { createAdmin, getAdmins, getAllUsers, promoteUser, createOutlet, getAllOutlets } from "../../services/adminService";
 import { toast, ToastContainer } from "react-toastify";
+import "./SuperAdmindash.css";
 
 const SuperAdmindash = () => {
   const [active, setActive] = useState('overview');
@@ -126,83 +127,83 @@ const SuperAdmindash = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="super-admin-dashboard">
       <ToastContainer />
-      <aside className="w-64 bg-white p-6 shadow-md flex flex-col justify-between">
+      <aside className="super-admin-sidebar">
         <div>
-          <div className="flex items-center space-x-2">
-            <img src="/logo.png" alt="VayuGas" className="w-12 h-12" />
-            <span className="text-lg font-bold">SuperAdmin</span>
+          <div className="sidebar-header">
+            <img src="/logo.png" alt="VayuGas" className="sidebar-logo" />
+            <span className="sidebar-title">SuperAdmin</span>
           </div>
 
-          <nav className="mt-8">
-            <ul className="space-y-4">
-              <li className={`cursor-pointer ${active === 'overview' ? 'text-blue-600' : 'text-gray-600'}`} onClick={() => setActive('overview')}> <FaChartLine className="inline mr-2" /> Overview</li>
-              <li className={`cursor-pointer ${active === 'users' ? 'text-blue-600' : 'text-gray-600'}`} onClick={() => setActive('users')}> <FaUsers className="inline mr-2" /> Manage Users</li>
-              <li className={`cursor-pointer ${active === 'outlets' ? 'text-blue-600' : 'text-gray-600'}`} onClick={() => setActive('outlets')}> <FaCogs className="inline mr-2" /> Manage Outlets</li>
-              <li className={`cursor-pointer ${active === 'system' ? 'text-blue-600' : 'text-gray-600'}`} onClick={() => setActive('system')}> <FaCogs className="inline mr-2" /> System Settings</li>
+          <nav className="sidebar-nav">
+            <ul className="nav-list">
+              <li className={`nav-item ${active === 'overview' ? 'active' : ''}`} onClick={() => setActive('overview')}> <FaChartLine className="nav-icon" /> Overview</li>
+              <li className={`nav-item ${active === 'users' ? 'active' : ''}`} onClick={() => setActive('users')}> <FaUsers className="nav-icon" /> Manage Users</li>
+              <li className={`nav-item ${active === 'outlets' ? 'active' : ''}`} onClick={() => setActive('outlets')}> <FaCogs className="nav-icon" /> Manage Outlets</li>
+              <li className={`nav-item ${active === 'system' ? 'active' : ''}`} onClick={() => setActive('system')}> <FaCogs className="nav-icon" /> System Settings</li>
             </ul>
           </nav>
         </div>
 
         <div>
-          <button className="flex items-center space-x-2 text-red-600 font-semibold" onClick={handleLogout}>
-            <FaSignOutAlt />
-            <span>Log Out</span>
-          </button>
-        </div>
-      </aside>
+          <div className="sidebar-footer">
+            <button onClick={handleLogout} className="logout-btn">
+              <FaSignOutAlt className="nav-icon" /> Logout
+            </button>
+          </div>
+        </aside>
 
-      <main className="flex-1 p-6 bg-gray-50">
-        <div className="bg-gradient-to-r from-blue-900 to-blue-700 text-white p-6 rounded-lg shadow-md">
-          <h1 className="text-2xl font-semibold">Super Admin Console</h1>
-          <p className="mt-1 text-sm opacity-90">Global controls and overview for the entire platform.</p>
-        </div>
+      <main className="dashboard-main">
+        <header className="dashboard-header">
+          <h1 className="header-title">Super Admin Console</h1>
+          <p className="header-subtitle">Global controls and overview for the entire platform.</p>
+        </header>
 
-        <section className="mt-6">
+        <section className="dashboard-content">
           {active === 'overview' && (
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded shadow"> <h3 className="font-semibold">Total Users</h3> <p className="mt-2 text-3xl">{stats.totalUsers}</p> </div>
-              <div className="bg-white p-6 rounded shadow"> <h3 className="font-semibold">Active Admins</h3> <p className="mt-2 text-3xl">{stats.activeAdmins}</p> </div>
-              <div className="bg-white p-6 rounded shadow"> <h3 className="font-semibold">System Health</h3> <p className="mt-2 text-3xl">{stats.systemHealth}</p> </div>
+            <div className="stats-grid">
+              <div className="stat-card"> <h3 className="stat-title">Total Users</h3> <p className="stat-value">{stats.totalUsers}</p> </div>
+              <div className="stat-card"> <h3 className="stat-title">Active Admins</h3> <p className="stat-value">{stats.activeAdmins}</p> </div>
+              <div className="stat-card"> <h3 className="stat-title">System Health</h3> <p className="stat-value">{stats.systemHealth}</p> </div>
             </div>
           )}
 
           {active === 'organizations' && (
-            <div className="bg-white p-6 rounded shadow">
-              <h3 className="font-semibold text-xl mb-4">Manage Organizations (Admins) ({admins.length})</h3>
+            <div className="content-card">
+              <h3 className="section-title">Manage Organizations (Admins) ({admins.length})</h3>
 
 
-              <form onSubmit={handleCreateAdmin} className="grid grid-cols-2 gap-4 mb-8 border-b pb-6">
-                <input type="text" name="firstname" placeholder="First Name" value={newAdmin.firstname} onChange={handleInputChange} className="border p-2 rounded" required />
-                <input type="text" name="lastname" placeholder="Last Name" value={newAdmin.lastname} onChange={handleInputChange} className="border p-2 rounded" required />
-                <input type="text" name="username" placeholder="Username (Org Name)" value={newAdmin.username} onChange={handleInputChange} className="border p-2 rounded" required />
-                <input type="email" name="email" placeholder="Email" value={newAdmin.email} onChange={handleInputChange} className="border p-2 rounded" required />
-                <input type="password" name="password" placeholder="Password" value={newAdmin.password} onChange={handleInputChange} className="border p-2 rounded" required />
-                <input type="text" name="contactNumber" placeholder="Contact Number" value={newAdmin.contactNumber} onChange={handleInputChange} className="border p-2 rounded" required />
-                <input type="text" name="street" placeholder="Street" value={newAdmin.street} onChange={handleInputChange} className="border p-2 rounded" required />
-                <input type="text" name="city" placeholder="City" value={newAdmin.city} onChange={handleInputChange} className="border p-2 rounded" required />
-                <button type="submit" className="col-span-2 bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Create Admin</button>
+              <form onSubmit={handleCreateAdmin} className="admin-form">
+                <input type="text" name="firstname" placeholder="First Name" value={newAdmin.firstname} onChange={handleInputChange} className="form-input" required />
+                <input type="text" name="lastname" placeholder="Last Name" value={newAdmin.lastname} onChange={handleInputChange} className="form-input" required />
+                <input type="text" name="username" placeholder="Username (Org Name)" value={newAdmin.username} onChange={handleInputChange} className="form-input" required />
+                <input type="email" name="email" placeholder="Email" value={newAdmin.email} onChange={handleInputChange} className="form-input" required />
+                <input type="password" name="password" placeholder="Password" value={newAdmin.password} onChange={handleInputChange} className="form-input" required />
+                <input type="text" name="contactNumber" placeholder="Contact Number" value={newAdmin.contactNumber} onChange={handleInputChange} className="form-input" required />
+                <input type="text" name="street" placeholder="Street" value={newAdmin.street} onChange={handleInputChange} className="form-input" required />
+                <input type="text" name="city" placeholder="City" value={newAdmin.city} onChange={handleInputChange} className="form-input" required />
+                <button type="submit" className="submit-btn">Create Admin</button>
               </form>
 
-              <h4 className="font-semibold text-lg mb-2">Existing Organizations</h4>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
+              <h4 className="section-subtitle">Existing Organizations</h4>
+              <div className="table-container">
+                <table className="data-table">
                   <thead>
                     <tr>
-                      <th className="py-2 px-4 border-b text-left">Org Name (Username)</th>
-                      <th className="py-2 px-4 border-b text-left">Email</th>
-                      <th className="py-2 px-4 border-b text-left">City</th>
-                      <th className="py-2 px-4 border-b text-left">Contact</th>
+                      <th>Org Name (Username)</th>
+                      <th>Email</th>
+                      <th>City</th>
+                      <th>Contact</th>
                     </tr>
                   </thead>
                   <tbody>
                     {admins.map(admin => (
                       <tr key={admin._id}>
-                        <td className="py-2 px-4 border-b">{admin.username}</td>
-                        <td className="py-2 px-4 border-b">{admin.email}</td>
-                        <td className="py-2 px-4 border-b">{admin.city}</td>
-                        <td className="py-2 px-4 border-b">{admin.contactNumber}</td>
+                        <td>{admin.username}</td>
+                        <td>{admin.email}</td>
+                        <td>{admin.city}</td>
+                        <td>{admin.contactNumber}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -212,31 +213,31 @@ const SuperAdmindash = () => {
           )}
 
           {active === 'users' && (
-            <div className="bg-white p-6 rounded shadow">
-              <h3 className="font-semibold text-xl mb-4">Manage Users ({users.length})</h3>
+            <div className="content-card">
+              <h3 className="section-title">Manage Users ({users.length})</h3>
 
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
+              <div className="table-container">
+                <table className="data-table">
                   <thead>
                     <tr>
-                      <th className="py-2 px-4 border-b text-left">Username</th>
-                      <th className="py-2 px-4 border-b text-left">Email</th>
-                      <th className="py-2 px-4 border-b text-left">Role</th>
-                      <th className="py-2 px-4 border-b text-left">Actions</th>
+                      <th>Username</th>
+                      <th>Email</th>
+                      <th>Role</th>
+                      <th>Actions</th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map(user => (
                       <tr key={user._id}>
-                        <td className="py-2 px-4 border-b">{user.username}</td>
-                        <td className="py-2 px-4 border-b">{user.email}</td>
-                        <td className="py-2 px-4 border-b">{user.role}</td>
-                        <td className="py-2 px-4 border-b">
+                        <td>{user.username}</td>
+                        <td>{user.email}</td>
+                        <td>{user.role}</td>
+                        <td>
                           {user.role !== 'superadmin' && (
-                            <>
-                              <button onClick={() => handlePromoteUser(user.username, 'admin')} className="bg-blue-500 text-white px-2 py-1 rounded mr-2">Promote to Admin</button>
-                              <button onClick={() => handlePromoteUser(user.username, 'user')} className="bg-gray-500 text-white px-2 py-1 rounded">Demote to User</button>
-                            </>
+                            <div className="action-buttons">
+                              <button onClick={() => handlePromoteUser(user.username, 'admin')} className="action-btn promote-btn">Promote to Admin</button>
+                              <button onClick={() => handlePromoteUser(user.username, 'user')} className="action-btn demote-btn">Demote to User</button>
+                            </div>
                           )}
                         </td>
                       </tr>
@@ -248,42 +249,42 @@ const SuperAdmindash = () => {
           )}
 
           {active === 'outlets' && (
-            <div className="bg-white p-6 rounded shadow">
-              <h3 className="font-semibold text-xl mb-4">Manage Outlets ({outlets.length})</h3>
+            <div className="content-card">
+              <h3 className="section-title">Manage Outlets ({outlets.length})</h3>
 
-              <form onSubmit={handleCreateOutlet} className="grid grid-cols-2 gap-4 mb-8 border-b pb-6">
-                <input type="text" name="name" placeholder="Outlet Name" value={newOutlet.name} onChange={handleOutletInputChange} className="border p-2 rounded" required />
-                <input type="text" name="location" placeholder="Location" value={newOutlet.location} onChange={handleOutletInputChange} className="border p-2 rounded" required />
-                <input type="text" name="city" placeholder="City" value={newOutlet.city} onChange={handleOutletInputChange} className="border p-2 rounded" required />
-                <input type="text" name="state" placeholder="State" value={newOutlet.state} onChange={handleOutletInputChange} className="border p-2 rounded" required />
-                <input type="password" name="password" placeholder="Password" value={newOutlet.password} onChange={handleOutletInputChange} className="border p-2 rounded" required />
-                <select name="adminId" value={newOutlet.adminId} onChange={handleOutletInputChange} className="border p-2 rounded" required>
+              <form onSubmit={handleCreateOutlet} className="admin-form">
+                <input type="text" name="name" placeholder="Outlet Name" value={newOutlet.name} onChange={handleOutletInputChange} className="form-input" required />
+                <input type="text" name="location" placeholder="Location" value={newOutlet.location} onChange={handleOutletInputChange} className="form-input" required />
+                <input type="text" name="city" placeholder="City" value={newOutlet.city} onChange={handleOutletInputChange} className="form-input" required />
+                <input type="text" name="state" placeholder="State" value={newOutlet.state} onChange={handleOutletInputChange} className="form-input" required />
+                <input type="password" name="password" placeholder="Password" value={newOutlet.password} onChange={handleOutletInputChange} className="form-input" required />
+                <select name="adminId" value={newOutlet.adminId} onChange={handleOutletInputChange} className="form-input" required>
                   <option value="">Select Admin</option>
                   {users.filter(u => u.role === 'admin').map(admin => (
                     <option key={admin._id} value={admin._id}>{admin.username}</option>
                   ))}
                 </select>
-                <button type="submit" className="col-span-2 bg-green-600 text-white p-2 rounded hover:bg-green-700">Create Outlet</button>
+                <button type="submit" className="submit-btn">Create Outlet</button>
               </form>
 
-              <h4 className="font-semibold text-lg mb-2">Existing Outlets</h4>
-              <div className="overflow-x-auto">
-                <table className="min-w-full bg-white border">
+              <h4 className="section-subtitle">Existing Outlets</h4>
+              <div className="table-container">
+                <table className="data-table">
                   <thead>
                     <tr>
-                      <th className="py-2 px-4 border-b text-left">Name</th>
-                      <th className="py-2 px-4 border-b text-left">Location</th>
-                      <th className="py-2 px-4 border-b text-left">City</th>
-                      <th className="py-2 px-4 border-b text-left">Admin</th>
+                      <th>Name</th>
+                      <th>Location</th>
+                      <th>City</th>
+                      <th>Admin</th>
                     </tr>
                   </thead>
                   <tbody>
                     {outlets.map(outlet => (
                       <tr key={outlet._id}>
-                        <td className="py-2 px-4 border-b">{outlet.name}</td>
-                        <td className="py-2 px-4 border-b">{outlet.location}</td>
-                        <td className="py-2 px-4 border-b">{outlet.city}</td>
-                        <td className="py-2 px-4 border-b">{outlet.adminId?.username || 'N/A'}</td>
+                        <td>{outlet.name}</td>
+                        <td>{outlet.location}</td>
+                        <td>{outlet.city}</td>
+                        <td>{outlet.adminId?.username || 'N/A'}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -293,8 +294,8 @@ const SuperAdmindash = () => {
           )}
 
           {active === 'system' && (
-            <div className="bg-white p-6 rounded shadow">
-              <h3 className="font-semibold">System Settings</h3>
+            <div className="content-card">
+              <h3 className="section-title">System Settings</h3>
               <p className="mt-2 text-sm text-gray-600">Global configuration and feature toggles (placeholder UI).</p>
             </div>
           )}

@@ -2,6 +2,7 @@ import React from "react";
 import { Line } from "react-chartjs-2";
 import { FaSearch } from "react-icons/fa";
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale } from "chart.js";
+import "./OutletPerformance.css";
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale);
 
@@ -25,42 +26,42 @@ const OutletPerformance = () => {
   };
 
   return (
-    <main className="flex-1 p-6 bg-gray-100">
+    <main className="outlet-performance-page">
       {/* Search Bar */}
-      <div className="flex justify-between items-center bg-white p-3 rounded-md shadow-md mb-6">
-        <div className="flex items-center space-x-2">
+      <div className="search-bar-container">
+        <div className="search-input-wrapper">
           <FaSearch />
-          <input type="text" placeholder="Search stock, reports, customers" className="outline-none" />
+          <input type="text" placeholder="Search stock, reports, customers" className="search-input" />
         </div>
-        <div className="w-10 h-10 rounded-full bg-gray-300"></div>
+        <div className="user-avatar"></div>
       </div>
 
       {/* Overview Section */}
-      <div className="grid grid-cols-2 gap-6 mb-6">
-        <div className="bg-white p-6 rounded-md shadow-md">
-          <h3 className="text-lg font-bold">Overview</h3>
-          <div className="grid grid-cols-3 gap-4 mt-4">
-            <div>
-              <p className="text-gray-600">Total Profit</p>
-              <p className="text-xl font-bold">LKR 21,190</p>
+      <div className="performance-grid">
+        <div className="performance-card">
+          <h3 className="card-title">Overview</h3>
+          <div className="stats-row">
+            <div className="stat-item">
+              <p className="stat-label">Total Profit</p>
+              <p className="stat-value">LKR 21,190</p>
             </div>
-            <div>
-              <p className="text-gray-600">Revenue</p>
-              <p className="text-xl font-bold text-orange-500">LKR 18,300</p>
+            <div className="stat-item">
+              <p className="stat-label">Revenue</p>
+              <p className="stat-value revenue">LKR 18,300</p>
             </div>
-            <div>
-              <p className="text-gray-600">Sales</p>
-              <p className="text-xl font-bold text-blue-500">LKR 17,432</p>
+            <div className="stat-item">
+              <p className="stat-label">Sales</p>
+              <p className="stat-value sales">LKR 17,432</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-md shadow-md">
-          <h3 className="text-lg font-bold">Best Selling Category</h3>
-          <table className="w-full mt-4">
+        <div className="performance-card">
+          <h3 className="card-title">Best Selling Category</h3>
+          <table className="performance-table">
             <thead>
-              <tr className="text-gray-500">
-                <th className="text-left">Category</th>
+              <tr>
+                <th>Category</th>
                 <th className="text-right">Turn Over</th>
                 <th className="text-right">Increase By</th>
               </tr>
@@ -69,17 +70,17 @@ const OutletPerformance = () => {
               <tr>
                 <td>2.3Kg Cylinder</td>
                 <td className="text-right">LKR 26,000</td>
-                <td className="text-right text-green-500">3.2%</td>
+                <td className="text-right text-green">3.2%</td>
               </tr>
               <tr>
                 <td>05Kg Cylinder</td>
                 <td className="text-right">LKR 22,000</td>
-                <td className="text-right text-green-500">2%</td>
+                <td className="text-right text-green">2%</td>
               </tr>
               <tr>
                 <td>12Kg Cylinder</td>
                 <td className="text-right">LKR 22,000</td>
-                <td className="text-right text-green-500">1.5%</td>
+                <td className="text-right text-green">1.5%</td>
               </tr>
             </tbody>
           </table>
@@ -87,20 +88,20 @@ const OutletPerformance = () => {
       </div>
 
       {/* Profit & Revenue Chart */}
-      <div className="bg-white p-6 rounded-md shadow-md mb-6">
-        <h3 className="text-lg font-bold">Profit & Revenue</h3>
+      <div className="chart-container">
+        <h3 className="card-title">Profit & Revenue</h3>
         <Line data={profitData} />
       </div>
 
       {/* Best Selling Products */}
-      <div className="bg-white p-6 rounded-md shadow-md">
-        <h3 className="text-lg font-bold">Best Selling Product</h3>
-        <table className="w-full mt-4">
+      <div className="performance-card">
+        <h3 className="card-title">Best Selling Product</h3>
+        <table className="performance-table">
           <thead>
-            <tr className="text-gray-500">
-              <th className="text-left">Product</th>
-              <th className="text-left">Product ID</th>
-              <th className="text-left">Category</th>
+            <tr>
+              <th>Product</th>
+              <th>Product ID</th>
+              <th>Category</th>
               <th className="text-right">Remaining Qty</th>
               <th className="text-right">Turn Over</th>
               <th className="text-right">Increase By</th>
@@ -113,7 +114,7 @@ const OutletPerformance = () => {
               <td>Small</td>
               <td className="text-right">200</td>
               <td className="text-right">LKR 17,000</td>
-              <td className="text-right text-green-500">2.3%</td>
+              <td className="text-right text-green">2.3%</td>
             </tr>
             <tr>
               <td>05Kg</td>
@@ -121,7 +122,7 @@ const OutletPerformance = () => {
               <td>Medium</td>
               <td className="text-right">150</td>
               <td className="text-right">LKR 12,000</td>
-              <td className="text-right text-green-500">1.3%</td>
+              <td className="text-right text-green">1.3%</td>
             </tr>
             <tr>
               <td>12Kg</td>
@@ -129,7 +130,7 @@ const OutletPerformance = () => {
               <td>Large</td>
               <td className="text-right">100</td>
               <td className="text-right">LKR 10,000</td>
-              <td className="text-right text-green-500">1.3%</td>
+              <td className="text-right text-green">1.3%</td>
             </tr>
           </tbody>
         </table>

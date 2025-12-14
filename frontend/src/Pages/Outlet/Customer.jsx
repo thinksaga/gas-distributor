@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import "./Customer.css";
 
 const CustomerOrders = () => {
   const [customers, setCustomers] = useState([
@@ -56,16 +57,16 @@ const CustomerOrders = () => {
   const filteredOrders = filterStatus === "All" ? customers : customers.filter(c => c.status === filterStatus);
 
   return (
-    <div className="p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold">Customer Orders</h2>
-        <button onClick={handleDownloadReport} className="px-4 py-2 bg-blue-500 text-white rounded">Download Report</button>
+    <div className="customer-orders-page">
+      <div className="page-header">
+        <h2 className="page-title">Customer Orders</h2>
+        <button onClick={handleDownloadReport} className="action-btn download-btn">Download Report</button>
       </div>
 
       {/* Filter Dropdown */}
-      <div className="mb-4">
-        <label className="font-semibold mr-2">Filter by Status:</label>
-        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="border p-2">
+      <div className="filter-section">
+        <label className="filter-label">Filter by Status:</label>
+        <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)} className="filter-select">
           <option value="All">All</option>
           <option value="Pending">Pending</option>
           <option value="Approved">Approved</option>
@@ -75,46 +76,52 @@ const CustomerOrders = () => {
         </select>
       </div>
 
-      <table className="w-full border-collapse border border-gray-300">
-        <thead>
-          <tr className="bg-gray-200">
-            <th className="border p-2">Customer ID</th>
-            <th className="border p-2">Order ID</th>
-            <th className="border p-2">Product</th>
-            <th className="border p-2">Quantity</th>
-            <th className="border p-2">Order Date</th>
-            <th className="border p-2">Delivery Date</th>
-            <th className="border p-2">Status</th>
-            <th className="border p-2">Token</th>
-            <th className="border p-2">Token Expiry</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredOrders.map((c) => (
-            <tr key={c.orderId} className="border">
-              <td className="border p-2">{c.id}</td>
-              <td className="border p-2">{c.orderId}</td>
-              <td className="border p-2">{c.product}</td>
-              <td className="border p-2 font-bold">{c.quantity}</td>
-              <td className="border p-2">{c.orderDate}</td>
-              <td className="border p-2">{c.deliveryDate}</td>
-              <td className="border p-2">
-                <select value={c.status} onChange={(e) => handleStatusChange(c.orderId, e.target.value)} className="border p-1">
-                  <option value="Pending">Pending</option>
-                  <option value="Approved">Approved</option>
-                  <option value="In Progress">In Progress</option>
-                  <option value="Delivered">Delivered</option>
-                  <option value="Cancelled">Cancelled</option>
-                </select>
-              </td>
-              <td className="border p-2">{c.token}</td>
-              <td className={`border p-2 ${c.tokenExpiry && c.tokenExpiry < new Date().toISOString().split("T")[0] ? "text-red-500" : ""}`}>
-                {c.tokenExpiry || "N/A"}
-              </td>
+      <div className="orders-table-container">
+        <table className="orders-table">
+          <thead>
+            <tr>
+              <th>Customer ID</th>
+              <th>Order ID</th>
+              <th>Product</th>
+              <th>Quantity</th>
+              <th>Order Date</th>
+              <th>Delivery Date</th>
+              <th>Status</th>
+              <th>Token</th>
+              <th>Token Expiry</th>
             </tr>
-          ))}
-        </tbody>
-      </table>
+          </thead>
+          <tbody>
+            {filteredOrders.map((c) => (
+              <tr key={c.orderId}>
+                <td>{c.id}</td>
+                <td>{c.orderId}</td>
+                <td>{c.product}</td>
+                <td>{c.quantity}</td>
+                <td>{c.orderDate}</td>
+                <td>{c.deliveryDate}</td>
+                <td>
+                  <select
+                    value={c.status}
+                    onChange={(e) => handleStatusChange(c.orderId, e.target.value)}
+                    className={`status-select status-${c.status.toLowerCase().replace(" ", "")}`}
+                  >
+                    <option value="Pending">Pending</option>
+                    <option value="Approved">Approved</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Delivered">Delivered</option>
+                    <option value="Cancelled">Cancelled</option>
+                  </select>
+                </td>
+                <td>{c.token ? <span className="token-badge">{c.token}</span> : "-"}</td>
+                <td className={`expiry-text ${c.tokenExpiry && c.tokenExpiry < new Date().toISOString().split("T")[0] ? "text-red-500" : ""}`}>
+                  {c.tokenExpiry || "N/A"}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

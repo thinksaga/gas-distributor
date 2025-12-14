@@ -8,6 +8,8 @@ import About from "./Components/About";
 import Footer from "./Components/Footer";
 import Feature from "./Components/Feature";
 import Support from "./Components/Support";
+import Career from "./Components/Career";
+import Blog from "./Components/Blog";
 import {authcontext} from "../context/authcontext.jsx";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
@@ -50,19 +52,12 @@ function App() {
   // const [isLoggedIn, setIsLoggedIn] = useState(true);
   // const [userRole, setUserRole] = useState("admin"); // Track user role
 
-  const [activeSection, setActiveSection] = useState("home");
+  // const [activeSection, setActiveSection] = useState("home");
 
   return (
     <Router>
       {!isLoggedIn && (
-        <Navbar
-          homebtn={() => setActiveSection("home")}
-          abtBtn={() => setActiveSection("about")}
-          febtn={() => setActiveSection("feature")}
-          supbtn={() => setActiveSection("support")}
-          toggleLogin={() => setShowLogin(true)}
-          toggleSignup={() => setShowSignup(true)}
-        />
+        <Navbar />
       )}
 
       {showLogin && !isLoggedIn && (
@@ -78,7 +73,14 @@ function App() {
 
       <Routes>
         {/* Redirect based on login state using imperative navigation to avoid Navigate loops */}
-        <Route path="/" element={<HomeRouter activeSection={activeSection} Header={Header} About={About} Feature={Feature} Support={Support} />} />
+        <Route path="/" element={<HomeRouter Header={Header} />} />
+        
+        {/* Public Pages */}
+        <Route path="/career" element={<><Navbar /><Career /><Footer /></>} />
+        <Route path="/blog" element={<><Navbar /><Blog /><Footer /></>} />
+        <Route path="/about" element={<><Navbar /><About /><Footer /></>} />
+        <Route path="/features" element={<><Navbar /><Feature /><Footer /></>} />
+        <Route path="/support" element={<><Navbar /><Support /><Footer /></>} />
 
         {/* Auth Routes */}
         <Route path="/login" element={!isLoggedIn ? <Suspense fallback={<LoadingSpinner />}><LoginPage /></Suspense> : <Navigate to="/" />} />
@@ -117,8 +119,8 @@ function App() {
   );
 }
 
-// HomeRouter component: performs a one-time redirect based on auth state
-function HomeRouter({ activeSection, Header, About, Feature, Support }) {
+// HomeRouter component: shows the home page
+function HomeRouter({ Header }) {
   const { isAuthChecked, isLoggedIn, userRole } = useContext(authcontext);
   const navigate = useNavigate();
 
@@ -137,14 +139,7 @@ function HomeRouter({ activeSection, Header, About, Feature, Support }) {
   if (!isAuthChecked) return <LoadingSpinner />;
   if (isLoggedIn) return null; // navigation in progress
 
-  return (
-    <>
-      {activeSection === "home" && <Header />}
-      {activeSection === "about" && <About />}
-      {activeSection === "feature" && <Feature />}
-      {activeSection === "support" && <Support />}
-    </>
-  );
+  return <Header />;
 }
 
 export default App;
